@@ -32,4 +32,8 @@ public class Person {
     private City city;
     @Column(nullable = false)
     private String address;
+
+    public String getFullName() {
+        return name + " " + surname;
+    }
 }

@@ -5,14 +5,13 @@ import com.dm.MedicalDocumentation.user.Role;
 import com.dm.MedicalDocumentation.user.User;
 import com.dm.MedicalDocumentation.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class AuthenticationService {
         var user = repository.findByUserLogin(request.getUserLogin())
                 .orElseThrow();     //TODO add proper exception
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(Map.of("Authorities", user.getAuthorities()), user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

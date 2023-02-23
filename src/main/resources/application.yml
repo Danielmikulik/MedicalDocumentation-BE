@@ -13,3 +13,5 @@ spring:
         format_sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
+  jackson:
+    default-property-inclusion: non_null
