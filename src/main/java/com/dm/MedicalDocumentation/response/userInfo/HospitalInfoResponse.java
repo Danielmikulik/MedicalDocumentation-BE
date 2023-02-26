@@ -1,5 +1,6 @@
-package com.dm.MedicalDocumentation.response;
+package com.dm.MedicalDocumentation.response.userInfo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,28 +8,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientInfoResponse {
+public class HospitalInfoResponse {
     @JsonProperty("Prihlasovacie meno")
     private String userLogin;
     @JsonProperty("Email")
     private String email;
     @JsonProperty("Telefón")
     private String telephone;
+    @JsonFormat(pattern="dd.MM.yyyy HH:mm")
     @JsonProperty("Registrovaný od")
     private LocalDateTime registeredSince;
-    @JsonProperty("Meno a priezvisko")
-    private String fullName;
-    @JsonProperty("Rodné číslo")
-    private String birthNumber;
-    @JsonProperty("Mesto")
-    private String city;
-    @JsonProperty("Adresa")
-    private String address;
-    @JsonProperty("Zdravotná poisťovňa")
-    private String insurance;
+    @JsonProperty("Nemocnica")
+    private String name;
+    @JsonProperty("Oddelenia")
+    private List<String> departments;
 }

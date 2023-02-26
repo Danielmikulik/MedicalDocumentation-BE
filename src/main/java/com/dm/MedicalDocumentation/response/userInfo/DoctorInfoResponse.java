@@ -1,4 +1,4 @@
-package com.dm.MedicalDocumentation.response;
+package com.dm.MedicalDocumentation.response.userInfo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminInfoResponse {
+public class DoctorInfoResponse {
     @JsonProperty("Prihlasovacie meno")
     private String userLogin;
     @JsonProperty("Email")
@@ -23,4 +23,16 @@ public class AdminInfoResponse {
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
     @JsonProperty("Registrovaný od")
     private LocalDateTime registeredSince;
+    @JsonProperty("Meno a priezvisko")
+    private String fullName;
+    @JsonProperty("Rodné číslo")
+    private String birthNumber;
+    @JsonProperty("Mesto")
+    private String city;
+    @JsonProperty("Adresa")
+    private String address;
+    @JsonProperty("Nemocnica")
+    private String hospital;
+    @JsonProperty("Oddelenie")
+    private String department;
 }

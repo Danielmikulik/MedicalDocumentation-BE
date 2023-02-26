@@ -26,6 +26,6 @@ public class Hospital {
     @Column(nullable = false, length = 70)
     private String hospitalName;
 
-    @OneToMany(cascade = { CascadeType.ALL }, mappedBy = "id.hospital")
+    @OneToMany(cascade = { CascadeType.ALL }, mappedBy = "id.hospital", fetch = FetchType.LAZY)
     private List<Department> departments;
 }

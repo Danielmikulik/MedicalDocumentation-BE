@@ -1,10 +1,10 @@
 package com.dm.MedicalDocumentation.user;
 
 import com.dm.MedicalDocumentation.request.UserLoginRequest;
-import com.dm.MedicalDocumentation.response.AdminInfoResponse;
-import com.dm.MedicalDocumentation.response.DoctorInfoResponse;
-import com.dm.MedicalDocumentation.response.HospitalInfoResponse;
-import com.dm.MedicalDocumentation.response.PatientInfoResponse;
+import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
+import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
+import com.dm.MedicalDocumentation.response.userInfo.HospitalInfoResponse;
+import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
