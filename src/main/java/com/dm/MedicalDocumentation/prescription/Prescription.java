@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -31,6 +33,6 @@ public class Prescription {
     @Column(nullable = false)
     private Integer amount;
     @Column(nullable = false)
-    private Boolean retrieved;
-
+    private LocalDateTime prescribedAt;
+    private LocalDateTime retrievedAt;
 }

@@ -2,6 +2,7 @@ package com.dm.MedicalDocumentation.medicalExamination;
 
 import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.MedicalExamForPatient;
+import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class MedicalExaminationService {
 
     private final MedicalExaminationRepository repository;
 
-    public List<MedicalExamForPatient> gePatientsExams(UserLoginRequest request) {
+    public List<MedicalExamForPatient> getPatientsExams(UserLoginRequest request) {
         List<MedicalExamination> exams = repository.findByPatientUserUserLogin(request.getUserLogin());
         List<MedicalExamForPatient> results = new ArrayList<>(exams.size());
         for (MedicalExamination exam : exams) {
