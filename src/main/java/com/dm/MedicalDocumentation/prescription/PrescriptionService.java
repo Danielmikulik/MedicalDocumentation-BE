@@ -15,8 +15,8 @@ public class PrescriptionService {
 
     private final PrescriptionRepository repository;
 
-    public List<PrescriptionResponse> getPatientsPrescriptions(UserLoginRequest request) {
-        List<Prescription> prescriptions = repository.findByPatientUserUserLogin(request.getUserLogin());
+    public List<PrescriptionResponse> getPatientsPrescriptions(String userLogin) {
+        List<Prescription> prescriptions = repository.findByPatientUserUserLogin(userLogin);
         List<PrescriptionResponse> result = new ArrayList<>(prescriptions.size());
 
         for (Prescription prescription : prescriptions) {

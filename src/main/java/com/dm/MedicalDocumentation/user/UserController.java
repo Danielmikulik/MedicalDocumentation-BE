@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.user;
 
+import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
@@ -16,37 +17,42 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
+    private final JwtService jwtService;
     private final UserService service;
 
     @PostMapping("/patient")
     @RolesAllowed("PATIENT")
     public ResponseEntity<PatientInfoResponse> getPatientInfo(
-            @RequestBody UserLoginRequest request
+            @RequestHeader (name="Authorization") String token
     ) {
-        return ResponseEntity.ok(service.getPatientInfo(request));
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPatientInfo(userLogin));
     }
 
     @PostMapping("/doctor")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<DoctorInfoResponse> getDoctorInfo(
-            @RequestBody UserLoginRequest request
+            @RequestHeader (name="Authorization") String token
     ) {
-        return ResponseEntity.ok(service.getDoctorInfo(request));
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getDoctorInfo(userLogin));
     }
 
     @PostMapping("/hospital")
     @RolesAllowed("HOSPITAL")
     public ResponseEntity<HospitalInfoResponse> getHospitalInfo(
-            @RequestBody UserLoginRequest request
+            @RequestHeader (name="Authorization") String token
     ) {
-        return ResponseEntity.ok(service.getHospitalInfo(request));
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getHospitalInfo(userLogin));
     }
 
     @PostMapping("/admin")
     @RolesAllowed("ADMIN")
     public ResponseEntity<AdminInfoResponse> getAdminInfo(
-            @RequestBody UserLoginRequest request
+            @RequestHeader (name="Authorization") String token
     ) {
-        return ResponseEntity.ok(service.getAdminInfo(request));
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getAdminInfo(userLogin));
     }
 }

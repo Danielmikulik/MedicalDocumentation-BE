@@ -1,8 +1,8 @@
-package com.dm.MedicalDocumentation.prescription;
+package com.dm.MedicalDocumentation.disease;
 
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.UserLoginRequest;
-import com.dm.MedicalDocumentation.response.PrescriptionResponse;
+import com.dm.MedicalDocumentation.response.DiseaseResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/prescription")
+@RequestMapping("/api/disease")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
-public class PrescriptionController {
+public class DiseaseController {
+
     private final JwtService jwtService;
-    private final PrescriptionService service;
-    @PostMapping("/patient_prescriptions")
+    private final DiseaseService service;
+
+    @PostMapping
     @RolesAllowed("PATIENT")
-    public ResponseEntity<List<PrescriptionResponse>> getPatientsPrescriptions(
+    public ResponseEntity<List<DiseaseResponse>> getPatientsDiseases(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPatientsPrescriptions(userLogin));
+        return ResponseEntity.ok(service.getPatientsDiseases(userLogin));
     }
 }

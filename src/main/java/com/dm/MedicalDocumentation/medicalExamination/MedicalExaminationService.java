@@ -1,8 +1,8 @@
 package com.dm.MedicalDocumentation.medicalExamination;
 
 import com.dm.MedicalDocumentation.request.UserLoginRequest;
-import com.dm.MedicalDocumentation.response.MedicalExamForPatient;
-import com.dm.MedicalDocumentation.response.PrescriptionResponse;
+import com.dm.MedicalDocumentation.response.MedicalExamDoctor;
+import com.dm.MedicalDocumentation.response.MedicalExamPatient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +15,36 @@ public class MedicalExaminationService {
 
     private final MedicalExaminationRepository repository;
 
-    public List<MedicalExamForPatient> getPatientsExams(UserLoginRequest request) {
-        List<MedicalExamination> exams = repository.findByPatientUserUserLogin(request.getUserLogin());
-        List<MedicalExamForPatient> results = new ArrayList<>(exams.size());
+    public List<MedicalExamPatient> getPatientsExams(String userLogin) {
+        List<MedicalExamination> exams = repository.findByPatientUserUserLogin(userLogin);
+        List<MedicalExamPatient> results = new ArrayList<>(exams.size());
         for (MedicalExamination exam : exams) {
             String disease = exam.getDisease() != null
                     ? exam.getDisease().getDiseaseType().getDiseaseTypeName()
                     : null;
-            results.add(MedicalExamForPatient.builder()
+            results.add(MedicalExamPatient.builder()
                     .type(exam.getType().getExaminationTypeName())
                     .disease(disease)
                     .doctor(exam.getDoctor().getPerson().getFullName())
+                    .startTime(exam.getStartTime())
+                    .endTime(exam.getEndTime())
+                    .build()
+            );
+        }
+        return results;
+    }
+
+    public List<MedicalExamDoctor> getDoctorsExams(String userLogin) {
+        List<MedicalExamination> exams = repository.findByDoctorUserUserLogin(userLogin);
+        List<MedicalExamDoctor> results = new ArrayList<>(exams.size());
+        for (MedicalExamination exam : exams) {
+            String disease = exam.getDisease() != null
+                    ? exam.getDisease().getDiseaseType().getDiseaseTypeName()
+                    : null;
+            results.add(MedicalExamDoctor.builder()
+                    .type(exam.getType().getExaminationTypeName())
+                    .disease(disease)
+                    .patient(exam.getPatient().getPerson().getFullName())
                     .startTime(exam.getStartTime())
                     .endTime(exam.getEndTime())
                     .build()

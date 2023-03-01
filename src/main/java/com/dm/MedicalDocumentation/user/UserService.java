@@ -21,8 +21,8 @@ import java.util.List;
 public class UserService {
     private final UserRepository repository;
 
-    public PatientInfoResponse getPatientInfo(UserLoginRequest request) {
-        User user = repository.findByUserLogin(request.getUserLogin())
+    public PatientInfoResponse getPatientInfo(String userLogin) {
+        User user = repository.findByUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
         Patient patient = user.getPatient();
         Person person = patient.getPerson();
@@ -39,8 +39,8 @@ public class UserService {
                 .build();
     }
 
-    public DoctorInfoResponse getDoctorInfo(UserLoginRequest request) {
-        User user = repository.findByUserLogin(request.getUserLogin())
+    public DoctorInfoResponse getDoctorInfo(String userLogin) {
+        User user = repository.findByUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
         Doctor doctor = user.getDoctor();
         Person person = doctor.getPerson();
@@ -62,8 +62,8 @@ public class UserService {
                 .build();
     }
 
-    public HospitalInfoResponse getHospitalInfo(UserLoginRequest request) {
-        User user = repository.findByUserLogin(request.getUserLogin())
+    public HospitalInfoResponse getHospitalInfo(String userLogin) {
+        User user = repository.findByUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
         Hospital hospital = user.getHospital();
         List<String> departments = hospital.getDepartments().stream()
@@ -78,8 +78,8 @@ public class UserService {
                 .build();
     }
 
-    public AdminInfoResponse getAdminInfo(UserLoginRequest request) {
-        User user = repository.findByUserLogin(request.getUserLogin())
+    public AdminInfoResponse getAdminInfo(String userLogin) {
+        User user = repository.findByUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
         return AdminInfoResponse.builder()
                 .userLogin(user.getUserLogin())

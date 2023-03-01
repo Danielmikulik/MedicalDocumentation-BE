@@ -7,19 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrescriptionResponse {
-    private String medicationName;
-    private String medicationAmount;
-    private int packageCount;
-    private String doctor;
+public class DiseaseResponse {
+    private String disease;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
-    private LocalDateTime prescribedAt;
+    private LocalDateTime diagnosed;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
-    private LocalDateTime retrievedAt;
+    private LocalDateTime cured;
 }

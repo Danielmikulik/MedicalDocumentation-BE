@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MedicalExamForPatient {
+public class MedicalExamPatient {
     private String type;
     private String disease;
     private String doctor;
