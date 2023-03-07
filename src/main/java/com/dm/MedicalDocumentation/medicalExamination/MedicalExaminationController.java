@@ -1,8 +1,7 @@
 package com.dm.MedicalDocumentation.medicalExamination;
 
 import com.dm.MedicalDocumentation.config.JwtService;
-import com.dm.MedicalDocumentation.response.MedicalExamDoctor;
-import com.dm.MedicalDocumentation.response.MedicalExamPatient;
+import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class MedicalExaminationController {
     private final MedicalExaminationService service;
     @PostMapping("/patient")
     @RolesAllowed("PATIENT")
-    public ResponseEntity<List<MedicalExamPatient>> getPatientsMedicalExams(
+    public ResponseEntity<List<MedicalExamResponse>> getPatientsMedicalExams(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
@@ -28,7 +27,7 @@ public class MedicalExaminationController {
 
     @PostMapping("/doctor")
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<List<MedicalExamDoctor>> getDoctorsMedicalExams(
+    public ResponseEntity<List<MedicalExamResponse>> getDoctorsMedicalExams(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));

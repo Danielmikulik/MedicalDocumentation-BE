@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.medicalExamination;
 
+import com.dm.MedicalDocumentation.attachment.Attachment;
 import com.dm.MedicalDocumentation.disease.Disease;
 import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.medicalExamination.type.ExaminationType;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
 public class MedicalExamination {
     @Id
     @GeneratedValue
-    private Integer medicalExaminationId;
+    private Long medicalExaminationId;
     @ManyToOne
     @JoinColumn(name = "examination_type_id", nullable = false)
     private ExaminationType type;
@@ -38,4 +40,6 @@ public class MedicalExamination {
     private LocalDateTime startTime;
     @Column(nullable = false)
     private LocalDateTime endTime;
+    @OneToMany(cascade = { CascadeType.ALL },mappedBy = "attachmentId", fetch = FetchType.LAZY)
+    private List<Attachment> attachments;
 }

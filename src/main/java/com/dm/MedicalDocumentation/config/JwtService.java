@@ -24,8 +24,13 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extactAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public Object extractClaim(String token, String claim) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get(claim);
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -56,7 +61,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extactAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSigningKey())

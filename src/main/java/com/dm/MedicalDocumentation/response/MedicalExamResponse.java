@@ -12,9 +12,11 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MedicalExamPatient {
+public class MedicalExamResponse {
+    private Long id;
     private String type;
     private String disease;
+    private String patient;
     private String doctor;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
     private LocalDateTime startTime;
