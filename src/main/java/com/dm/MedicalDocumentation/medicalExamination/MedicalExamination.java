@@ -3,6 +3,7 @@ package com.dm.MedicalDocumentation.medicalExamination;
 import com.dm.MedicalDocumentation.attachment.Attachment;
 import com.dm.MedicalDocumentation.disease.Disease;
 import com.dm.MedicalDocumentation.doctor.Doctor;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.medicalExamination.type.ExaminationType;
 import com.dm.MedicalDocumentation.patient.Patient;
 import jakarta.persistence.*;
@@ -36,6 +37,9 @@ public class MedicalExamination {
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+    @ManyToOne
+    @JoinColumn(name = "department_type", nullable = false)
+    private DepartmentType departmentType;
     @Column(nullable = false)
     private LocalDateTime startTime;
     @Column(nullable = false)

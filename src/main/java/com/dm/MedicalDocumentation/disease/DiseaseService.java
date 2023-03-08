@@ -1,6 +1,5 @@
 package com.dm.MedicalDocumentation.disease;
 
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.DiseaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import java.util.List;
 public class DiseaseService {
     private final DiseaseRepository repository;
     public List<DiseaseResponse> getPatientsDiseases(String userLogin) {
-        List<Disease> diseases = repository.findByPatientUserUserLoginOrderByDiagnosed(userLogin);
+        List<Disease> diseases = repository.findByPatientUserUserLoginOrderByCuredAscDiagnosed(userLogin);
         List<DiseaseResponse> results = new ArrayList<>(diseases.size());
         for (Disease disease : diseases) {
             results.add(DiseaseResponse.builder()

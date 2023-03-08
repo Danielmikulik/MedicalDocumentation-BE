@@ -1,6 +1,5 @@
 package com.dm.MedicalDocumentation.patient.insuranceHistory;
 
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.PatientsInsuranceHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import java.util.List;
 public class PatientInsuranceHistoryService {
     private final PatientsInsuranceHistoryRepository repository;
     public List<PatientsInsuranceHistoryResponse> getPatientsInsuranceHistory(String userLogin) {
-        List<PatientInsuranceHistory> histories = repository.findByIdPatientUserUserLogin(userLogin);
+        List<PatientInsuranceHistory> histories = repository.findByIdPatientUserUserLoginOrderByDateToAsc(userLogin);
         List<PatientsInsuranceHistoryResponse> results = new ArrayList<>(histories.size());
         for (PatientInsuranceHistory history : histories) {
             results.add(PatientsInsuranceHistoryResponse.builder()

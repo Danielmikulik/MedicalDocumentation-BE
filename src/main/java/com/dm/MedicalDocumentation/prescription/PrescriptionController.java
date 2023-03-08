@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/prescription")
@@ -20,9 +21,19 @@ public class PrescriptionController {
     @PostMapping("/patient_prescriptions")
     @RolesAllowed("PATIENT")
     public ResponseEntity<List<PrescriptionResponse>> getPatientsPrescriptions(
+            @RequestHeader (name="Authorization") String token,
+            @RequestBody Map<String, String> medicationMap
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPatientsPrescriptions(userLogin, medicationMap.get("medication")));
+    }
+
+    @GetMapping("/patient_medications")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<List<String>> getPatientsMedications(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPatientsPrescriptions(userLogin));
+        return ResponseEntity.ok(service.getPatientsMedications(userLogin));
     }
 }

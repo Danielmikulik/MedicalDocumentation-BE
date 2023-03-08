@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PatientsInsuranceHistoryRepository extends JpaRepository<PatientInsuranceHistory, PatientInsuranceHistoryID> {
 
-    List<PatientInsuranceHistory> findByIdPatientUserUserLogin(String userLogin);
+    List<PatientInsuranceHistory> findByIdPatientUserUserLoginOrderByDateToAsc(String userLogin);
 
 }

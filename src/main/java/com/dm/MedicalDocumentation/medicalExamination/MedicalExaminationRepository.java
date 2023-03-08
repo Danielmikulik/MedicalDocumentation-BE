@@ -11,12 +11,11 @@ public interface MedicalExaminationRepository extends JpaRepository<MedicalExami
     List<MedicalExamination> findByPatientUserUserLogin(String userLogin);
     List<MedicalExamination> findByDoctorUserUserLogin(String userLogin);
 
+    //TODO: add accessRequest when implemented
     @Query("SELECT me FROM MedicalExamination me " +
             "JOIN Doctor d on (me.doctor = d) " +
-            "JOIN DoctorHistory dh on (d = dh.id.doctor) " +
             "WHERE me.doctor = ?1 " +
-            "OR d.department.id.departmentType = ?2 " +
-            "OR dh.department.id.departmentType = ?2 AND dh.id.dateFrom <= me.startTime AND dh.dateTo > me.startTime")
+            "OR me.departmentType = ?2")
     List<MedicalExamination> findAllWithinDepartment(Doctor doctor, DepartmentType departmentType);
 
 }
