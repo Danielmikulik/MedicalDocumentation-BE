@@ -35,6 +35,7 @@ public class MedicalExaminationService {
                     .type(exam.getType().getExaminationTypeName())
                     .disease(disease)
                     .doctor(exam.getDoctor().getPerson().getFullName())
+                    .doctorId(exam.getDoctor().getDoctorId())
                     .startTime(exam.getStartTime())
                     .endTime(exam.getEndTime())
                     .build()

@@ -31,6 +31,7 @@ public class PrescriptionService {
                             .medicationAmount(prescription.getMedication().getAmount() + " " + prescription.getMedication().getUnit())
                             .packageCount(prescription.getAmount())
                             .doctor(prescription.getDoctor().getPerson().getFullName())
+                            .doctorId(prescription.getDoctor().getDoctorId())
                             .prescribedAt(prescription.getPrescribedAt())
                             .retrievedAt(retrievedAt)
                     .build());

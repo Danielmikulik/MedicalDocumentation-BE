@@ -19,7 +19,9 @@ public class AccessRequestResponse {
     private String patientName;
     private String patientBirthNumber;
     private String requestDoctor;
+    private Long requestDoctorId;
     private String examDoctor;
+    private Long examDoctorId;
     private String department;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
     private LocalDateTime startTime;

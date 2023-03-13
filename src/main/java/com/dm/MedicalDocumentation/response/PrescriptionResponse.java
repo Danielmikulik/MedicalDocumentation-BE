@@ -18,6 +18,7 @@ public class PrescriptionResponse {
     private String medicationAmount;
     private int packageCount;
     private String doctor;
+    private Long doctorId;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
     private LocalDateTime prescribedAt;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")
