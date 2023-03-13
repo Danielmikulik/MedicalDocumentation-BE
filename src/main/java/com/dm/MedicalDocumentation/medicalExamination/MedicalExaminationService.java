@@ -4,13 +4,14 @@ import com.dm.MedicalDocumentation.accessRequest.AccessRequest;
 import com.dm.MedicalDocumentation.accessRequest.AccessRequestRepository;
 import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.doctor.DoctorRepository;
-import com.dm.MedicalDocumentation.doctor.history.DoctorHistory;
+import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import com.dm.MedicalDocumentation.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,22 +89,38 @@ public class MedicalExaminationService {
             return true;
         }
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
-                .orElseThrow(() -> new IllegalArgumentException("No user with given login found!"));
-        for (DoctorHistory history : medicalExamination.getDoctor().getHistory()) {
-            if (history.getId().getDateFrom().isBefore(medicalExamination.getStartTime().toLocalDate())
-                    && (history.getDateTo() == null
-                        || history.getDateTo().isAfter(medicalExamination.getStartTime().toLocalDate()))
-                    && history.getDepartment().getId().getDepartmentType().equals(doctor.getDepartment().getId().getDepartmentType())) {
-                return true;
-            }
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
+        if (doctor.getDepartment().getId().getDepartmentType().equals(medicalExamination.getDepartmentType())) {
+            return true;
         }
+//        for (DoctorHistory history : medicalExamination.getDoctor().getHistory()) {
+//            if (history.getId().getDateFrom().isBefore(medicalExamination.getStartTime().toLocalDate())
+//                    && (history.getDateTo() == null
+//                        || history.getDateTo().isAfter(medicalExamination.getStartTime().toLocalDate()))
+//                    && history.getDepartment().getId().getDepartmentType().equals(doctor.getDepartment().getId().getDepartmentType())) {
+//                return true;
+//            }
+//        }
         List<AccessRequest> requests = accessRequestRepository
                 .findByMedicalExaminationMedicalExaminationId(medicalExamination.getMedicalExaminationId());
         for (AccessRequest request : requests) {
-            if (request.getApproved() && request.getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+            if (request.getApproved()
+                    && request.getDoctor().getDoctorId().equals(doctor.getDoctorId())
+                    && request.getAccessibleUntil().isAfter(LocalDate.now())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public List<String> getDoctorsPatients(String userLogin) {
+        Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
+        List<Patient> patients = repository.findDoctorsPatients(doctor.getDoctorId());
+        List<String> result = new ArrayList<>(patients.size());
+        for (Patient patient : patients) {
+            result.add(patient.getPerson().getBirthNumber() + " " + patient.getPerson().getFullName());
+        }
+        return result;
     }
 }

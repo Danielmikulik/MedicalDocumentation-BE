@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -33,5 +33,5 @@ public class AccessRequest {
     @Column(nullable = false)
     private Boolean approved;
     @Column(nullable = false)
-    private LocalDateTime accessibleUntil;
+    private LocalDate accessibleUntil;
 }

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -46,9 +47,13 @@ public class AuthenticationService {
             )
         );
         var user = repository.findByUserLogin(request.getUserLogin())
-                .orElseThrow();     //TODO add proper exception
-
-        var jwtToken = jwtService.generateToken(Map.of("Authorities", user.getAuthorities()), user);
+                .orElseThrow(() -> new IllegalArgumentException("No user with given login exists."));
+        Map<String, Object> extraClaims = new HashMap<>(Map.of("Authorities", user.getAuthorities()));
+        if (user.getDoctor() != null) {
+            String department = user.getDoctor().getDepartment().getId().getDepartmentType().getDepartmentTypeName();
+            extraClaims.put("department", department);
+        }
+        var jwtToken = jwtService.generateToken(extraClaims, user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

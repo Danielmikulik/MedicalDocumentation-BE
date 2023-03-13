@@ -33,4 +33,13 @@ public class MedicalExaminationController {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.getDoctorsExams(userLogin));
     }
+
+    @GetMapping("/doctors_patients")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<List<String>> getDoctorsPatients(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getDoctorsPatients(userLogin));
+    }
 }
