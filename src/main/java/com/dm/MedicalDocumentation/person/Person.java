@@ -23,7 +23,7 @@ public class Person {
     private String name;
     @Column(nullable = false, length = 30)
     private String surname;
-    @Column(length = 11)
+    @Column(length = 11, unique = true)
     private String birthNumber;
     @Column(nullable = false)
     private LocalDate birthDate;

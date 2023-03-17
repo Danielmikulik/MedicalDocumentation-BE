@@ -4,6 +4,7 @@ import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,9 +43,7 @@ public class PrescriptionService {
 
     public List<String> getPatientsMedications(String userLogin) {
         Patient patient = patientRepository.findByUserUserLogin(userLogin)
-                .orElseThrow(() -> new IllegalArgumentException("No patient with userLogin" + userLogin + "exists."));
-        List<String> medications = repository.findPatientsMedications(patient);
-
-        return medications;
+                .orElseThrow(() -> new UsernameNotFoundException("No patient with userLogin" + userLogin + "exists."));
+        return repository.findPatientsMedications(patient);
     }
 }

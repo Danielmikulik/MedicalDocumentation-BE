@@ -1,7 +1,6 @@
 package com.dm.MedicalDocumentation.disease;
 
 import com.dm.MedicalDocumentation.config.JwtService;
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.DiseaseResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class DiseaseController {
-
     private final JwtService jwtService;
     private final DiseaseService service;
 

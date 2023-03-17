@@ -1,7 +1,6 @@
 package com.dm.MedicalDocumentation.prescription;
 
 import com.dm.MedicalDocumentation.config.JwtService;
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;

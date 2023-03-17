@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.patient;
 
+import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.healthInsurance.HealthInsurance;
 import com.dm.MedicalDocumentation.person.Person;
 import com.dm.MedicalDocumentation.user.User;
@@ -22,6 +23,9 @@ public class Patient {
     @OneToOne
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
+    @ManyToOne
+    @JoinColumn(name = "general_practitioner")
+    private Doctor generalPractitioner;
     @OneToOne
     @JoinColumn(name = "insurance_id", nullable = false)
     private HealthInsurance healthInsurance;

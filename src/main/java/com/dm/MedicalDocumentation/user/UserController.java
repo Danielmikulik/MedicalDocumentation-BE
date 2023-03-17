@@ -1,7 +1,6 @@
 package com.dm.MedicalDocumentation.user;
 
 import com.dm.MedicalDocumentation.config.JwtService;
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.HospitalInfoResponse;

@@ -6,7 +6,6 @@ import com.dm.MedicalDocumentation.hospital.department.Department;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.person.Person;
-import com.dm.MedicalDocumentation.request.UserLoginRequest;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.HospitalInfoResponse;

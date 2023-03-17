@@ -86,12 +86,11 @@ public class AccessRequestService {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
 
-        Page<AccessRequest> requestsPage = repository.getGeneralPractitionersPatientsAccessRequests(doctor, patientName,
+        Page<AccessRequest> requests = repository.getGeneralPractitionersPatientsAccessRequests(doctor, patientName,
                 patientBirthNumber, requestDoctor, examDoctor, department, page);
 
-        List<AccessRequest> requests = requestsPage.getContent();
-        List<AccessRequestResponse> result = new ArrayList<>(requests.size());
-        for (AccessRequest request : requests) {
+        List<AccessRequestResponse> result = new ArrayList<>(requests.getContent().size());
+        for (AccessRequest request : requests.getContent()) {
             result.add(AccessRequestResponse.builder()
                             .id(request.getRequestId())
                             .patientName(request.getPatient().getPerson().getFullName())
@@ -105,8 +104,7 @@ public class AccessRequestService {
                             .accessibleUntil(request.getAccessibleUntil())
                     .build());
         }
-        CustomPage<AccessRequestResponse> resultPage = new CustomPage<>(result, requestsPage.getTotalElements());
-        return resultPage;
+        return new CustomPage<>(result, requests.getTotalElements(), requests.getTotalPages());
     }
 
     public List<String> getDoctorsPatientsWithAccessRequests(String userLogin) {
@@ -128,7 +126,8 @@ public class AccessRequestService {
         List<AccessRequest> requests = new ArrayList<>(ids.size());
         for (long id : ids) {
             Optional<AccessRequest> request = repository.findById(id);
-            if (request.isPresent() && doctor.getDoctorId().equals(request.get().getPatient().getGeneralPractitioner().getDoctorId())) {
+            if (request.isPresent() && !request.get().getApproved()
+                    && doctor.getDoctorId().equals(request.get().getPatient().getGeneralPractitioner().getDoctorId())) {
                 request.get().setApproved(true);
                 requests.add(request.get());
                 confirmCount++;

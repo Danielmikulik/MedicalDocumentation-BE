@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginRequest {
-    private String userLogin;
+public class StringRequest {
+    private String value;
 }
