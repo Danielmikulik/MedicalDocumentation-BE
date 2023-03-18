@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,5 +18,17 @@ public class DiseaseTypeService {
             result.add(type.getDiseaseTypeName());
         }
         return result;
+    }
+
+    public boolean recordExists(String name) {
+        Optional<DiseaseType> diseaseType = repository.findByDiseaseTypeName(name);
+        return diseaseType.isPresent();
+    }
+
+    public void createDiseaseType(String name) {
+        DiseaseType diseaseType = DiseaseType.builder()
+                .diseaseTypeName(name)
+                .build();
+        repository.save(diseaseType);
     }
 }

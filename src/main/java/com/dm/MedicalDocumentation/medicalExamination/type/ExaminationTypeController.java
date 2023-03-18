@@ -1,12 +1,12 @@
 package com.dm.MedicalDocumentation.medicalExamination.type;
 
+import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
+import com.dm.MedicalDocumentation.request.StringRequest;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,5 +21,17 @@ public class ExaminationTypeController {
     @RolesAllowed({"DOCTOR", "ADMIN", "HOSPITAL"})
     public ResponseEntity<List<String>> getDepartmentTypes() {
         return ResponseEntity.ok(service.getExaminationTypes());
+    }
+
+    @PostMapping
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Object> createExaminationType(
+            @RequestBody StringRequest request
+    ) {
+        if (service.recordExists(request.getValue())) {
+            throw new RecordAlreadyExistsException("A examination type: " + request.getValue() + ", already exists.");
+        }
+        service.createExaminationType(request.getValue());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

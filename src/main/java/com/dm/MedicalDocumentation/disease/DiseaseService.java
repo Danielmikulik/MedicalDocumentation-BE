@@ -4,7 +4,6 @@ import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.response.DiseaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
