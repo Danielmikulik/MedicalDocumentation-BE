@@ -33,5 +33,7 @@ public class AccessRequest {
     @Column(nullable = false)
     private Boolean approved;
     @Column(nullable = false)
+    private Boolean rejected;
+    @Column(nullable = false)
     private LocalDate accessibleUntil;
 }

@@ -68,6 +68,7 @@ public class AccessRequestService {
                         .patient(patient)
                         .doctor(doctor)
                         .approved(false)
+                        .rejected(false)
                         .accessibleUntil(request.getDateUntil())
                         .build()
                 );
@@ -119,21 +120,25 @@ public class AccessRequestService {
         return result;
     }
 
-    public String confirmAccessRequests(String userLogin, List<Long> ids) {
+    public String updateAccessRequests(String userLogin, List<Long> ids, boolean isApproved) {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
-        int confirmCount = 0;
+        int updateCount = 0;
         List<AccessRequest> requests = new ArrayList<>(ids.size());
         for (long id : ids) {
             Optional<AccessRequest> request = repository.findById(id);
-            if (request.isPresent() && !request.get().getApproved()
+            if (request.isPresent() && !request.get().getApproved() && !request.get().getRejected()
                     && doctor.getDoctorId().equals(request.get().getPatient().getGeneralPractitioner().getDoctorId())) {
-                request.get().setApproved(true);
+                if (isApproved) {
+                    request.get().setApproved(true);
+                } else {
+                    request.get().setRejected(true);
+                }
                 requests.add(request.get());
-                confirmCount++;
+                updateCount++;
             }
         }
         repository.saveAll(requests);
-        return String.valueOf(confirmCount);
+        return String.valueOf(updateCount);
     }
 }
