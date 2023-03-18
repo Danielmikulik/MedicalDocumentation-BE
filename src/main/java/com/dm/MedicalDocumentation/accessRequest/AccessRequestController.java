@@ -8,14 +8,12 @@ import com.dm.MedicalDocumentation.response.AccessRequestResponse;
 import com.dm.MedicalDocumentation.response.CustomPage;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/access_request")
@@ -77,11 +75,24 @@ public class AccessRequestController {
             @RequestHeader(name="Authorization") String token,
             @RequestBody IdArrayRequest request
             ) {
+        return updateAccessRequests(token, request, true);
+    }
+
+    @PostMapping("/reject")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<String> rejectAccessRequests(
+            @RequestHeader(name="Authorization") String token,
+            @RequestBody IdArrayRequest request
+    ) {
+        return updateAccessRequests(token, request, false);
+    }
+
+    private ResponseEntity<String> updateAccessRequests(String token, IdArrayRequest request, boolean isAccepted) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         String department = (String) jwtService.extractClaim(token.substring(7), "department");
         if (!department.equalsIgnoreCase("Ambulancia všeobecného lekára")) {
             return ResponseEntity.badRequest().body("Only general practitioners can confirm access requests");
         }
-        return ResponseEntity.ok(service.confirmAccessRequests(userLogin, request.getIds()));
+        return ResponseEntity.ok(service.updateAccessRequests(userLogin, request.getIds(), isAccepted));
     }
 }

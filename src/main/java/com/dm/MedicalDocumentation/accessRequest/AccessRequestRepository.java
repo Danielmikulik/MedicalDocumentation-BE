@@ -5,7 +5,6 @@ import com.dm.MedicalDocumentation.medicalExamination.MedicalExamination;
 import com.dm.MedicalDocumentation.patient.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -27,6 +26,7 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
             "FROM AccessRequest ar " +
             "WHERE ar.patient.generalPractitioner = ?1 " +
             "AND ar.approved = false " +
+            "AND ar.rejected = false " +
             "AND ar.patient.person.name || ar.patient.person.surname LIKE %?2% " +
             "AND ar.patient.person.birthNumber LIKE %?3% " +
             "AND ar.doctor.person.name || ar.doctor.person.surname LIKE %?4% " +
