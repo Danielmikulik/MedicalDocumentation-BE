@@ -1,6 +1,7 @@
 package com.dm.MedicalDocumentation.disease;
 
 import com.dm.MedicalDocumentation.config.JwtService;
+import com.dm.MedicalDocumentation.request.StringRequest;
 import com.dm.MedicalDocumentation.response.DiseaseResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,15 @@ public class DiseaseController {
     private final DiseaseService service;
 
     @PostMapping
-    @RolesAllowed("PATIENT")
+    @RolesAllowed({"PATIENT", "DOCTOR"})
     public ResponseEntity<List<DiseaseResponse>> getPatientsDiseases(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestBody StringRequest birthNumber
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPatientsDiseases(userLogin));
+        List<DiseaseResponse> response = birthNumber.getValue() == null
+                ? service.getPatientsDiseasesByUserLogin(userLogin)
+                : service.getPatientsDiseasesByBirthNumber(birthNumber.getValue());
+        return ResponseEntity.ok(response);
     }
 }

@@ -10,5 +10,6 @@ import java.util.Optional;
 
 public interface DiseaseRepository extends JpaRepository<Disease, Long> {
     List<Disease> findByPatientUserUserLoginOrderByCuredAscDiagnosed(String userLogin);
+    List<Disease> findByPatientOrderByCuredAscDiagnosed(Patient patient);
     Optional<Disease> findByPatientAndDiseaseTypeAndCured(Patient patient, DiseaseType diseaseType, LocalDateTime cured);
 }

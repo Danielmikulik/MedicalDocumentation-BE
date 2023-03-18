@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +42,14 @@ public class PrescriptionService {
         return result;
     }
 
-    public List<String> getPatientsMedications(String userLogin) {
+    public List<String> getPatientsMedicationsByUserLogin(String userLogin) {
         Patient patient = patientRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("No patient with userLogin" + userLogin + "exists."));
         return repository.findPatientsMedications(patient);
+    }
+
+    public List<String> getPatientsMedicationsByBirthNumber(String birthNumber) {
+        Optional<Patient> patient = patientRepository.findByPersonBirthNumber(birthNumber);
+        return patient.map(repository::findPatientsMedications).orElse(new ArrayList<>());
     }
 }

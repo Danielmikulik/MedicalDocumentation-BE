@@ -19,8 +19,8 @@ public class UserController {
     private final JwtService jwtService;
     private final UserService service;
 
-    @PostMapping("/patient")
-    @RolesAllowed("PATIENT")
+    @GetMapping("/patient")
+    @RolesAllowed({"PATIENT"})
     public ResponseEntity<PatientInfoResponse> getPatientInfo(
             @RequestHeader (name="Authorization") String token
     ) {
@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.ok(service.getPatientInfo(userLogin));
     }
 
-    @PostMapping("/doctor")
+    @GetMapping("/doctor")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<DoctorInfoResponse> getDoctorInfo(
             @RequestHeader (name="Authorization") String token
@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(service.getDoctorInfo(userLogin));
     }
 
-    @PostMapping("/hospital")
+    @GetMapping("/hospital")
     @RolesAllowed("HOSPITAL")
     public ResponseEntity<HospitalInfoResponse> getHospitalInfo(
             @RequestHeader (name="Authorization") String token
@@ -46,7 +46,7 @@ public class UserController {
         return ResponseEntity.ok(service.getHospitalInfo(userLogin));
     }
 
-    @PostMapping("/admin")
+    @GetMapping("/admin")
     @RolesAllowed("ADMIN")
     public ResponseEntity<AdminInfoResponse> getAdminInfo(
             @RequestHeader (name="Authorization") String token

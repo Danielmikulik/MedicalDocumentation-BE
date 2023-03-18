@@ -2,6 +2,7 @@ package com.dm.MedicalDocumentation.medicalExamination;
 
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.MedicalExamRequest;
+import com.dm.MedicalDocumentation.request.StringRequest;
 import com.dm.MedicalDocumentation.response.CustomPage;
 import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -32,19 +33,19 @@ public class MedicalExaminationController {
         return ResponseEntity.ok(service.getPatientsExams(userLogin, page));
     }
 
-    @GetMapping("/doctor")
+    @PostMapping("/doctor")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<CustomPage<MedicalExamResponse>> getDoctorsMedicalExams(
             @RequestHeader (name="Authorization") String token,
             @RequestParam int pageIndex,
             @RequestParam int pageSize,
-            @RequestParam(required = false) String birthNumber
+            @RequestBody StringRequest birthNumber
             ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         String department = (String) jwtService.extractClaim(token.substring(7), "department");
         boolean isGeneralPractitioner = department.equalsIgnoreCase("Ambulancia všeobecného lekára");
         Pageable page = PageRequest.of(pageIndex, pageSize);
-        return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber, isGeneralPractitioner, page));
+        return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber.getValue(), isGeneralPractitioner, page));
     }
 
     @GetMapping("/doctors_patients")

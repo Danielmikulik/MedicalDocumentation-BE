@@ -1,6 +1,7 @@
 package com.dm.MedicalDocumentation.prescription;
 
 import com.dm.MedicalDocumentation.config.JwtService;
+import com.dm.MedicalDocumentation.request.StringRequest;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,16 @@ public class PrescriptionController {
     @RolesAllowed("PATIENT")
     public ResponseEntity<List<String>> getPatientsMedications(
             @RequestHeader (name="Authorization") String token
-    ) {
+            ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPatientsMedications(userLogin));
+        return ResponseEntity.ok(service.getPatientsMedicationsByUserLogin(userLogin));
+    }
+
+    @PostMapping("/patient_medications_by_birth_number")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<List<String>> getPatientsMedicationsByBirthNumber(
+            @RequestBody StringRequest request
+    ) {
+        return ResponseEntity.ok(service.getPatientsMedicationsByBirthNumber(request.getValue()));
     }
 }
