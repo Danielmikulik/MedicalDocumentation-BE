@@ -32,9 +32,22 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
             "AND ar.doctor.person.name || ar.doctor.person.surname LIKE %?4% " +
             "AND ar.medicalExamination.doctor.person.name || ar.medicalExamination.doctor.person.surname LIKE %?5% " +
             "AND ar.medicalExamination.departmentType.departmentTypeName LIKE  %?6%")
-    Page<AccessRequest> getGeneralPractitionersPatientsAccessRequests(Doctor doctor, String patientName, String birthNumber,
+    Page<AccessRequest> getGeneralPractitionersPatientsNotRejectedAccessRequests(Doctor doctor, String patientName, String birthNumber,
                                                                               String requestDoctor, String examDoctor, String department,
                                                                               Pageable pageable);
+
+    @Query("SELECT DISTINCT ar " +
+            "FROM AccessRequest ar " +
+            "WHERE ar.patient.generalPractitioner = ?1 " +
+            "AND ar.approved = false " +
+            "AND ar.patient.person.name || ar.patient.person.surname LIKE %?2% " +
+            "AND ar.patient.person.birthNumber LIKE %?3% " +
+            "AND ar.doctor.person.name || ar.doctor.person.surname LIKE %?4% " +
+            "AND ar.medicalExamination.doctor.person.name || ar.medicalExamination.doctor.person.surname LIKE %?5% " +
+            "AND ar.medicalExamination.departmentType.departmentTypeName LIKE  %?6%")
+    Page<AccessRequest> getGeneralPractitionersPatientsAllAccessRequests(Doctor doctor, String patientName, String birthNumber,
+                                                                      String requestDoctor, String examDoctor, String department,
+                                                                      Pageable pageable);
 
     @Query("SELECT DISTINCT p FROM AccessRequest ar " +
             "JOIN Patient p ON (ar.patient = p)" +

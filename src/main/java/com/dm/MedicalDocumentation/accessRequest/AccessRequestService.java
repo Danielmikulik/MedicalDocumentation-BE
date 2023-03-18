@@ -77,7 +77,7 @@ public class AccessRequestService {
         return repository.saveAll(accessRequests).size();
     }
 
-    public CustomPage<AccessRequestResponse> getDoctorsPatientsAccessRequests(String userLogin, Pageable page, String patientName, String patientBirthNumber, String requestDoctor, String examDoctor, String department) {
+    public CustomPage<AccessRequestResponse> getDoctorsPatientsAccessRequests(String userLogin, Pageable page, boolean showRejected, String patientName, String patientBirthNumber, String requestDoctor, String examDoctor, String department) {
         patientName = patientName == null ? "" : patientName;
         patientBirthNumber = patientBirthNumber == null ? "" : patientBirthNumber;
         requestDoctor = requestDoctor == null ? "" : requestDoctor;
@@ -87,8 +87,11 @@ public class AccessRequestService {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
 
-        Page<AccessRequest> requests = repository.getGeneralPractitionersPatientsAccessRequests(doctor, patientName,
-                patientBirthNumber, requestDoctor, examDoctor, department, page);
+        Page<AccessRequest> requests = showRejected
+                ? repository.getGeneralPractitionersPatientsAllAccessRequests(doctor, patientName,
+                    patientBirthNumber, requestDoctor, examDoctor, department, page)
+                : repository.getGeneralPractitionersPatientsNotRejectedAccessRequests(doctor, patientName,
+                    patientBirthNumber, requestDoctor, examDoctor, department, page);
 
         List<AccessRequestResponse> result = new ArrayList<>(requests.getContent().size());
         for (AccessRequest request : requests.getContent()) {

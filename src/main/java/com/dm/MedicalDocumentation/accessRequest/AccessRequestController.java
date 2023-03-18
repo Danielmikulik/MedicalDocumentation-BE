@@ -48,6 +48,7 @@ public class AccessRequestController {
             @RequestHeader(name="Authorization") String token,
             @RequestParam int pageIndex,
             @RequestParam int pageSize,
+            @RequestParam boolean showRejected,
             @RequestParam(required = false) String patientName,
             @RequestParam(required = false) String patientBirthNumber,
             @RequestParam(required = false) String requestDoctor,
@@ -56,7 +57,7 @@ public class AccessRequestController {
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         Pageable page = PageRequest.of(pageIndex, pageSize);
-        return ResponseEntity.ok(service.getDoctorsPatientsAccessRequests(userLogin, page, patientName,
+        return ResponseEntity.ok(service.getDoctorsPatientsAccessRequests(userLogin, page, showRejected, patientName,
                 patientBirthNumber, requestDoctor, examDoctor, department));
     }
 
