@@ -1,4 +1,4 @@
-package com.dm.MedicalDocumentation.hospital;
+package com.dm.MedicalDocumentation.healthInsurance;
 
 import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
 import com.dm.MedicalDocumentation.request.StringRequest;
@@ -9,21 +9,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/hospital")
+@RequestMapping("/api/health_insurance")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
-public class HospitalController {
-    private final HospitalService service;
+public class HealthInsuranceController {
+    private final HealthInsuranceService service;
 
     @PostMapping
     @RolesAllowed("ADMIN")
-    public ResponseEntity<Object> createHospital(
+    public ResponseEntity<Object> createHealthInsurance(
             @RequestBody StringRequest request
     ) {
         if (service.recordExists(request.getValue())) {
-            throw new RecordAlreadyExistsException("A Hospital with name: " + request.getValue() + ", already exists.");
+            throw new RecordAlreadyExistsException("A health insurance with name: " + request.getValue() + ", already exists.");
         }
-        service.createHospital(request.getValue());
+        service.createHealthInsurance(request.getValue());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
