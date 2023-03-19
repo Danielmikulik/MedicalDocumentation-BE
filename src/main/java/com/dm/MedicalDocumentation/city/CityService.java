@@ -15,10 +15,10 @@ public class CityService {
     }
 
     public void createCity(CityRequest request) {
-        City healthInsurance = City.builder()
+        City city = City.builder()
                 .zipCode(request.getZipCode())
                 .cityName(request.getName())
                 .build();
-        repository.save(healthInsurance);
+        repository.save(city);
     }
 }

@@ -1,4 +1,4 @@
-package com.dm.MedicalDocumentation.city;
+package com.dm.MedicalDocumentation.medication;
 
 import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
 import jakarta.annotation.security.RolesAllowed;
@@ -8,21 +8,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/city")
+@RequestMapping("/api/medication")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
-public class CityController {
-    private final CityService service;
+public class MedicationController {
+    private final MedicationService service;
 
     @PostMapping
     @RolesAllowed("ADMIN")
-    public ResponseEntity<Object> createCity(
-            @RequestBody CityRequest request
+    public ResponseEntity<Object> createMedication(
+            @RequestBody MedicationRequest request
     ) {
-        if (service.recordExists(request.getZipCode())) {
-            throw new RecordAlreadyExistsException("A city with code: " + request.getZipCode() + ", already exists.");
+        if (service.recordExists(request.getName(), request.getAmount())) {
+            throw new RecordAlreadyExistsException("A medication with name: " + request.getName() + ", already exists.");
         }
-        service.createCity(request);
+        service.createMedication(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
