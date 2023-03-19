@@ -18,8 +18,8 @@ public class ExaminationTypeController {
     private final ExaminationTypeService service;
 
     @GetMapping("/all")
-    @RolesAllowed({"DOCTOR", "ADMIN", "HOSPITAL"})
-    public ResponseEntity<List<String>> getDepartmentTypes() {
+    @RolesAllowed({"DOCTOR", "ADMIN"})
+    public ResponseEntity<List<String>> getExaminationTypes() {
         return ResponseEntity.ok(service.getExaminationTypes());
     }
 

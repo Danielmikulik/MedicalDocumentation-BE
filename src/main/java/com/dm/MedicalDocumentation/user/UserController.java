@@ -3,7 +3,6 @@ package com.dm.MedicalDocumentation.user;
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
-import com.dm.MedicalDocumentation.response.userInfo.HospitalInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -35,15 +34,6 @@ public class UserController {
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.getDoctorInfo(userLogin));
-    }
-
-    @GetMapping("/hospital")
-    @RolesAllowed("HOSPITAL")
-    public ResponseEntity<HospitalInfoResponse> getHospitalInfo(
-            @RequestHeader (name="Authorization") String token
-    ) {
-        String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getHospitalInfo(userLogin));
     }
 
     @GetMapping("/admin")

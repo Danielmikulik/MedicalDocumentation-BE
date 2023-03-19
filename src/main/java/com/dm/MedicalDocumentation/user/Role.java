@@ -3,8 +3,7 @@ package com.dm.MedicalDocumentation.user;
 public enum Role {
     ADMIN("admin"),
     PATIENT("patient"),
-    DOCTOR("doctor"),
-    HOSPITAL("hospital");
+    DOCTOR("doctor");
 
     private final String role;
     Role(String role) {

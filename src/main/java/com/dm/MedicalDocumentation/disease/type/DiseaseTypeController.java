@@ -17,8 +17,8 @@ import java.util.List;
 public class DiseaseTypeController {
     private final DiseaseTypeService service;
     @GetMapping("/all")
-    @RolesAllowed({"DOCTOR", "ADMIN", "HOSPITAL"})
-    public ResponseEntity<List<String>> getDepartmentTypes() {
+    @RolesAllowed({"DOCTOR", "ADMIN"})
+    public ResponseEntity<List<String>> getDiseaseTypes() {
         return ResponseEntity.ok(service.getDiseaseTypes());
     }
     @PostMapping

@@ -8,12 +8,9 @@ import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.person.Person;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
-import com.dm.MedicalDocumentation.response.userInfo.HospitalInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,22 +55,6 @@ public class UserService {
                 .address(person.getAddress())
                 .hospital(hospital.getHospitalName())
                 .department(departmentType.getDepartmentTypeName())
-                .build();
-    }
-
-    public HospitalInfoResponse getHospitalInfo(String userLogin) {
-        User user = repository.findByUserLogin(userLogin)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
-        Hospital hospital = user.getHospital();
-        List<String> departments = hospital.getDepartments().stream()
-                .map(department -> department.getId().getDepartmentType().getDepartmentTypeName())
-                .toList();
-        return HospitalInfoResponse.builder()
-                .userLogin(user.getUserLogin())
-                .email(user.getEmail())
-                .telephone(user.getTelephone())
-                .registeredSince(user.getCreatedAt())
-                .departments(departments)
                 .build();
     }
 
