@@ -136,19 +136,6 @@ public class MedicalExaminationService {
         return false;
     }
 
-    public List<String> getDoctorsPatients(String userLogin, boolean isGeneralPractitioner) {
-        Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
-                .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
-        List<Patient> patients = isGeneralPractitioner
-                ? patientRepository.findGeneralPractitionersPatients(doctor)
-                : patientRepository.findDoctorsPatients(doctor.getDoctorId());
-        List<String> result = new ArrayList<>(patients.size());
-        for (Patient patient : patients) {
-            result.add(patient.getPerson().getBirthNumber() + " " + patient.getPerson().getFullName());
-        }
-        return result;
-    }
-
     public String createMedicalExam(String userLogin, MedicalExamRequest request) {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));

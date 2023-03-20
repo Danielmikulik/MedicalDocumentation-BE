@@ -48,17 +48,6 @@ public class MedicalExaminationController {
         return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber.getValue(), isGeneralPractitioner, page));
     }
 
-    @GetMapping("/doctors_patients")
-    @RolesAllowed("DOCTOR")
-    public ResponseEntity<List<String>> getDoctorsPatients(
-            @RequestHeader (name="Authorization") String token
-    ) {
-        String userLogin = jwtService.extractUsername(token.substring(7));
-        String department = (String) jwtService.extractClaim(token.substring(7), "department");
-        boolean isGeneralPractitioner = department.equalsIgnoreCase("Ambulancia všeobecného lekára");
-        return ResponseEntity.ok(service.getDoctorsPatients(userLogin, isGeneralPractitioner));
-    }
-
     @PostMapping("/create")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<String> confirmAccessRequests(

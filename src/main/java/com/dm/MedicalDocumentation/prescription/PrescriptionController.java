@@ -5,6 +5,7 @@ import com.dm.MedicalDocumentation.request.StringRequest;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +44,16 @@ public class PrescriptionController {
             @RequestBody StringRequest request
     ) {
         return ResponseEntity.ok(service.getPatientsMedicationsByBirthNumber(request.getValue()));
+    }
+
+    @PostMapping
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<Object> createPrescription(
+            @RequestHeader (name="Authorization") String token,
+            @RequestBody PrescriptionRequest request
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        service.createPrescription(userLogin, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

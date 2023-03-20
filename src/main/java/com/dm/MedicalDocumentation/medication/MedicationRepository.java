@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface MedicationRepository extends JpaRepository<Medication, Integer> {
     Optional<Medication> findByMedicationNameAndAmount(String medicationName, int amount);
+    Optional<Medication> findByMedicationName(String medicationName);
 }

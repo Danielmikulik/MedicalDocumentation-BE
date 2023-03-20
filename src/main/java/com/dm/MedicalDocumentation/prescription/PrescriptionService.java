@@ -1,5 +1,9 @@
 package com.dm.MedicalDocumentation.prescription;
 
+import com.dm.MedicalDocumentation.doctor.Doctor;
+import com.dm.MedicalDocumentation.doctor.DoctorRepository;
+import com.dm.MedicalDocumentation.medication.Medication;
+import com.dm.MedicalDocumentation.medication.MedicationRepository;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
@@ -18,6 +22,8 @@ public class PrescriptionService {
 
     private final PrescriptionRepository repository;
     private final PatientRepository patientRepository;
+    private final MedicationRepository medicationRepository;
+    private final DoctorRepository doctorRepository;
 
     public List<PrescriptionResponse> getPatientsPrescriptions(String userLogin, String medication) {
         List<Prescription> prescriptions = repository
@@ -51,5 +57,23 @@ public class PrescriptionService {
     public List<String> getPatientsMedicationsByBirthNumber(String birthNumber) {
         Optional<Patient> patient = patientRepository.findByPersonBirthNumber(birthNumber);
         return patient.map(repository::findPatientsMedications).orElse(new ArrayList<>());
+    }
+
+    public void createPrescription(String userLogin, PrescriptionRequest request) {
+        Patient patient = patientRepository.findByPersonBirthNumber(request.getPatient())
+                .orElseThrow(() -> new UsernameNotFoundException("No patient with given birthNumber exists."));
+        Medication medication = medicationRepository.findByMedicationName(request.getMedication())
+                .orElseThrow(() -> new UsernameNotFoundException("No medication with given name exists."));
+        Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given userLogin found!"));
+        Prescription prescription = Prescription.builder()
+                .medication(medication)
+                .patient(patient)
+                .doctor(doctor)
+                .amount(request.getAmount())
+                .prescribedAt(LocalDateTime.now())
+                .retrievedAt(null)
+                .build();
+        repository.save(prescription);
     }
 }
