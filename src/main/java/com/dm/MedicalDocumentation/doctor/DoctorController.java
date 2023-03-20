@@ -32,10 +32,10 @@ public class DoctorController {
 
     @PostMapping("/department_change")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<Object> createDepartmentType(
+    public ResponseEntity<Object> changeDepartment(
             @RequestBody DoctorChangeRequest request
     ) {
-        if (service.recordExists(request)) {
+        if (service.departmentEquals(request)) {
             throw new RecordAlreadyExistsException("Doctor already works at given department.");
         }
         service.changeDepartment(request);

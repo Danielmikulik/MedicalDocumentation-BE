@@ -8,12 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/health_insurance")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class HealthInsuranceController {
     private final HealthInsuranceService service;
+
+    @GetMapping("/all")
+    @RolesAllowed({"DOCTOR", "ADMIN"})
+    public ResponseEntity<List<String>> getHealthInsurances() {
+        return ResponseEntity.ok(service.getHealthInsurances());
+    }
 
     @PostMapping
     @RolesAllowed("ADMIN")

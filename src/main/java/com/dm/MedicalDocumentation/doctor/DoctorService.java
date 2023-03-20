@@ -44,7 +44,7 @@ public class DoctorService {
         return result;
     }
 
-    public boolean recordExists(DoctorChangeRequest request) {
+    public boolean departmentEquals(DoctorChangeRequest request) {
         Optional<Doctor> doctor = repository.findByPersonBirthNumber(request.getDoctor());
         return doctor.isPresent() 
                 && doctor.get().getDepartment().getId().getHospital().getHospitalName().equals(request.getHospital())

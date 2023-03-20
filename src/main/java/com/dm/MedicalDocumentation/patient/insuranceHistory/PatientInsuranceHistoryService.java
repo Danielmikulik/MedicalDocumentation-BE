@@ -1,11 +1,14 @@
 package com.dm.MedicalDocumentation.patient.insuranceHistory;
 
+import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.response.PatientsInsuranceHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,4 +27,22 @@ public class PatientInsuranceHistoryService {
         return results;
     }
 
+    public void createHealthInsuranceHistory(Patient patient) {
+        Optional<PatientInsuranceHistory> latestHistory = repository.findFirstByIdPatientOrderByIdDateFromDesc(patient);
+        if (latestHistory.isPresent()) {
+            latestHistory.get().setDateTo(LocalDate.now());
+            repository.save(latestHistory.get());
+        }
+
+        PatientInsuranceHistory history = PatientInsuranceHistory.builder()
+                .id(PatientInsuranceHistoryID.builder()
+                        .patient(patient)
+                        .dateFrom(LocalDate.now())
+                        .build())
+                .dateTo(null)
+                .insurance(patient.getHealthInsurance())
+                .build();
+
+        repository.save(history);
+    }
 }

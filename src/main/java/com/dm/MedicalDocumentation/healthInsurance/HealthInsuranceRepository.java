@@ -6,5 +6,4 @@ import java.util.Optional;
 
 public interface HealthInsuranceRepository extends JpaRepository<HealthInsurance, Integer> {
     Optional<HealthInsurance> findByInsuranceName(String hospitalName);
-
 }

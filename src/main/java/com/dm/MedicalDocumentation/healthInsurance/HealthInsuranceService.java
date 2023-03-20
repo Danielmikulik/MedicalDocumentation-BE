@@ -3,6 +3,8 @@ package com.dm.MedicalDocumentation.healthInsurance;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,5 +21,14 @@ public class HealthInsuranceService {
                 .insuranceName(name)
                 .build();
         repository.save(healthInsurance);
+    }
+
+    public List<String> getHealthInsurances() {
+        List<HealthInsurance> healthInsurances = repository.findAll();
+        List<String> result = new ArrayList<>(healthInsurances.size());
+        for (HealthInsurance healthInsurance : healthInsurances) {
+            result.add(healthInsurance.getInsuranceName());
+        }
+        return result;
     }
 }
