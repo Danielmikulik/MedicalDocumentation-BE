@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Embeddable
 public class DepartmentID implements Serializable {
 
