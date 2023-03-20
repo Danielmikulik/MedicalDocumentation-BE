@@ -1,15 +1,13 @@
 package com.dm.MedicalDocumentation.doctor;
 
-import com.dm.MedicalDocumentation.attachment.Attachment;
-import com.dm.MedicalDocumentation.config.JwtService;
+import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
 import com.dm.MedicalDocumentation.response.userInfo.PublicDoctorInfoResponse;
-import com.dm.MedicalDocumentation.user.Role;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -19,11 +17,28 @@ import java.util.List;
 public class DoctorController {
     private final DoctorService service;
 
+    @GetMapping("/all")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getAllDoctors() {
+        return ResponseEntity.ok(service.getAllDoctors());
+    }
+
     @GetMapping("/{doctorId}")
     public ResponseEntity<PublicDoctorInfoResponse> getDoctorInfo(
-            @RequestHeader(name="Authorization") String token,
             @PathVariable("doctorId") long doctorId
     ) {
         return ResponseEntity.ok(service.getDoctorInfo(doctorId));
+    }
+
+    @PostMapping("/department_change")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Object> createDepartmentType(
+            @RequestBody DoctorChangeRequest request
+    ) {
+        if (service.recordExists(request)) {
+            throw new RecordAlreadyExistsException("Doctor already works at given department.");
+        }
+        service.changeDepartment(request);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
