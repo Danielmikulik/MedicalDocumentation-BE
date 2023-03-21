@@ -44,6 +44,17 @@ public class DoctorService {
         return result;
     }
 
+    public List<String> getAllGeneralPractitioners() {
+        DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName("Ambulancia všeobecného lekára")
+                .orElseThrow(() -> new IllegalArgumentException("No department type Ambulancia všeobecného lekára found!"));
+        List<Doctor> doctors = repository.findByDepartmentIdDepartmentType(departmentType);
+        List<String> result = new ArrayList<>(doctors.size());
+        for (Doctor doctor : doctors) {
+            result.add(doctor.getPerson().getBirthNumber() + " " + doctor.getPerson().getFullName());
+        }
+        return result;
+    }
+
     public boolean departmentEquals(DoctorChangeRequest request) {
         Optional<Doctor> doctor = repository.findByPersonBirthNumber(request.getDoctor());
         return doctor.isPresent() 

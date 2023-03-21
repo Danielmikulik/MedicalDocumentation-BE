@@ -12,6 +12,10 @@ import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -67,5 +71,20 @@ public class UserService {
                 .telephone(user.getTelephone())
                 .registeredSince(user.getCreatedAt())
                 .build();
+    }
+
+    public List<String> getRoles() {
+        return Arrays.stream(Role.values())
+                .map(Enum::name)
+                .toList();
+    }
+
+    public List<String> getLogins() {
+        List<User> users = repository.findAllByOrderByUserLogin();
+        List<String> result = new ArrayList<>(users.size());
+        for (User user : users) {
+            result.add(user.getUserLogin());
+        }
+        return result;
     }
 }

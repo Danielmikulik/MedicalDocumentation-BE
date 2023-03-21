@@ -56,4 +56,16 @@ public class PatientController {
         service.changeHealthInsurance(request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PostMapping
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<String> createPerson(
+            @RequestBody PatientRequest request
+    ) {
+        if (service.recordExists(request.getPerson())) {
+            throw new RecordAlreadyExistsException("A person with birth number: " + request.getPerson() + ", already exists.");
+        }
+        service.createPatient(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

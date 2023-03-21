@@ -5,6 +5,10 @@ import com.dm.MedicalDocumentation.doctor.DoctorRepository;
 import com.dm.MedicalDocumentation.healthInsurance.HealthInsurance;
 import com.dm.MedicalDocumentation.healthInsurance.HealthInsuranceRepository;
 import com.dm.MedicalDocumentation.patient.insuranceHistory.PatientInsuranceHistoryService;
+import com.dm.MedicalDocumentation.person.Person;
+import com.dm.MedicalDocumentation.person.PersonRepository;
+import com.dm.MedicalDocumentation.user.User;
+import com.dm.MedicalDocumentation.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,8 @@ public class PatientService {
     private final DoctorRepository doctorRepository;
     private final HealthInsuranceRepository healthInsuranceRepository;
     private final PatientInsuranceHistoryService patientInsuranceHistoryService;
+    private final PersonRepository personRepository;
+    private final UserRepository userRepository;
 
     public String getPatientNameByBirthNumber(String birthNumber) {
         Optional<Patient> patient = repository.findByPersonBirthNumber(birthNumber);
@@ -63,5 +69,29 @@ public class PatientService {
         repository.save(patient);
 
         patientInsuranceHistoryService.createHealthInsuranceHistory(patient);
+    }
+
+    public boolean recordExists(String birthNumber) {
+        Optional<Patient> patient = repository.findByPersonBirthNumber(birthNumber);
+        return patient.isPresent();
+    }
+
+    public void createPatient(PatientRequest request) {
+        Person person = personRepository.findByBirthNumber(request.getPerson())
+                .orElseThrow(() -> new IllegalArgumentException("No person with birthNumber " + request.getPerson() + " exists."));
+        Doctor generalPractitioner = doctorRepository.findByPersonBirthNumber(request.getGeneralPractitioner())
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with birthNumber " + request.getGeneralPractitioner() + " exists."));
+        HealthInsurance healthInsurance = healthInsuranceRepository.findByInsuranceName(request.getHealthInsurance())
+                .orElseThrow(() -> new IllegalArgumentException("No health insurance with name " + request.getHealthInsurance() + " exists."));
+        User user = userRepository.findByUserLogin(request.getUserLogin())
+                .orElseThrow(() -> new IllegalArgumentException("No user with login " + request.getUserLogin() + " exists."));
+
+        Patient patient = Patient.builder()
+                .user(user)
+                .person(person)
+                .generalPractitioner(generalPractitioner)
+                .healthInsurance(healthInsurance)
+                .build();
+        repository.save(patient);
     }
 }

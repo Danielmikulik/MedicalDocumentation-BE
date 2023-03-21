@@ -23,6 +23,12 @@ public class DoctorController {
         return ResponseEntity.ok(service.getAllDoctors());
     }
 
+    @GetMapping("/general_practitioners")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getAllGeneralPractitioners() {
+        return ResponseEntity.ok(service.getAllGeneralPractitioners());
+    }
+
     @GetMapping("/{doctorId}")
     public ResponseEntity<PublicDoctorInfoResponse> getDoctorInfo(
             @PathVariable("doctorId") long doctorId
