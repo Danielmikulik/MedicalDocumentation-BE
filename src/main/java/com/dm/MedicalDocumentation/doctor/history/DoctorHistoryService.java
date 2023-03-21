@@ -13,17 +13,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DoctorHistoryService {
     private final DoctorHistoryRepository repository;
-    public void createDoctorHistoryRecord(Doctor doctor) {
-        Optional<DoctorHistory> latestHistory = repository.findFirstByIdDoctorOrderByIdDateFromDesc(doctor);
-        if (latestHistory.isPresent()) {
-            latestHistory.get().setDateTo(LocalDate.now());
-            repository.save(latestHistory.get());
+    public void createDoctorHistoryRecord(Doctor doctor, boolean newDoctor) {
+        LocalDate dateFrom;
+        if (!newDoctor) {
+            Optional<DoctorHistory> latestHistory = repository.findFirstByIdDoctorOrderByIdDateFromDesc(doctor);
+            if (latestHistory.isPresent()) {
+                latestHistory.get().setDateTo(LocalDate.now());
+                repository.save(latestHistory.get());
+            }
+            dateFrom = LocalDate.now();
+        } else {
+            dateFrom = doctor.getUser().getCreatedAt().toLocalDate();
         }
 
         DoctorHistory doctorHistory = DoctorHistory.builder()
                 .id(DoctorHistoryID.builder()
                         .doctor(doctor)
-                        .dateFrom(LocalDate.now())
+                        .dateFrom(dateFrom)
                         .build())
                 .dateTo(null)
                 .department(Department.builder()

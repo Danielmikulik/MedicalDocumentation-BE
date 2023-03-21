@@ -8,7 +8,11 @@ import com.dm.MedicalDocumentation.hospital.department.DepartmentID;
 import com.dm.MedicalDocumentation.hospital.department.DepartmentRepository;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentTypeRepository;
+import com.dm.MedicalDocumentation.person.Person;
+import com.dm.MedicalDocumentation.person.PersonRepository;
 import com.dm.MedicalDocumentation.response.userInfo.PublicDoctorInfoResponse;
+import com.dm.MedicalDocumentation.user.User;
+import com.dm.MedicalDocumentation.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,8 @@ public class DoctorService {
     private final DepartmentTypeRepository departmentTypeRepository;
     private final DepartmentRepository departmentRepository;
     private final DoctorHistoryService doctorHistoryService;
+    private final PersonRepository personRepository;
+    private final UserRepository userRepository;
     public PublicDoctorInfoResponse getDoctorInfo(long doctorId) {
         Doctor doctor = repository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given id found!"));
@@ -87,6 +93,50 @@ public class DoctorService {
 
         repository.save(doctor);
 
-        doctorHistoryService.createDoctorHistoryRecord(doctor);
+        doctorHistoryService.createDoctorHistoryRecord(doctor, false);
+    }
+
+    public boolean recordExists(DoctorRequest request) {
+        Optional<Doctor> doctor = repository.findByPersonBirthNumber(request.getPerson());
+        Optional<User> user = userRepository.findByUserLogin(request.getUserLogin());
+        Doctor foundDoctor = null;
+        if (user.isPresent()) {
+            foundDoctor = user.get().getDoctor();
+        }
+        return doctor.isPresent() || foundDoctor != null;
+    }
+
+    @Transactional
+    public void createDoctor(DoctorRequest request) {
+        Person person = personRepository.findByBirthNumber(request.getPerson())
+                .orElseThrow(() -> new IllegalArgumentException("No person with birthNumber " + request.getPerson() + " exists."));
+        Hospital hospital = hospitalRepository.findByHospitalName(request.getHospital())
+                .orElseThrow(() -> new IllegalArgumentException("No hospital with given name found!"));
+        DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(request.getDepartmentType())
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given birthNumber found!"));
+        User user = userRepository.findByUserLogin(request.getUserLogin())
+                .orElseThrow(() -> new IllegalArgumentException("No user with login " + request.getUserLogin() + " exists."));
+
+        Optional<Department> department = departmentRepository.findByIdHospitalHospitalNameAndIdDepartmentTypeDepartmentTypeName(
+                request.getHospital(), request.getDepartmentType()
+        );
+        if (department.isEmpty()) {
+            throw new IllegalArgumentException("Department type does not exist in given hospital");
+        }
+
+        Doctor doctor = Doctor.builder()
+                .user(user)
+                .person(person)
+                .department(Department.builder()
+                        .id(DepartmentID.builder()
+                                .hospital(hospital)
+                                .departmentType(departmentType)
+                                .build())
+                        .build())
+                .build();
+
+        repository.save(doctor);
+
+        doctorHistoryService.createDoctorHistoryRecord(doctor, true);
     }
 }

@@ -27,17 +27,23 @@ public class PatientInsuranceHistoryService {
         return results;
     }
 
-    public void createHealthInsuranceHistory(Patient patient) {
-        Optional<PatientInsuranceHistory> latestHistory = repository.findFirstByIdPatientOrderByIdDateFromDesc(patient);
-        if (latestHistory.isPresent()) {
-            latestHistory.get().setDateTo(LocalDate.now());
-            repository.save(latestHistory.get());
+    public void createHealthInsuranceHistory(Patient patient, boolean newPatient) {
+        LocalDate dateFrom;
+        if (!newPatient) {
+            Optional<PatientInsuranceHistory> latestHistory = repository.findFirstByIdPatientOrderByIdDateFromDesc(patient);
+            if (latestHistory.isPresent()) {
+                latestHistory.get().setDateTo(LocalDate.now());
+                repository.save(latestHistory.get());
+            }
+            dateFrom = LocalDate.now();
+        } else {
+            dateFrom = patient.getPerson().getBirthDate();
         }
 
         PatientInsuranceHistory history = PatientInsuranceHistory.builder()
                 .id(PatientInsuranceHistoryID.builder()
                         .patient(patient)
-                        .dateFrom(LocalDate.now())
+                        .dateFrom(dateFrom)
                         .build())
                 .dateTo(null)
                 .insurance(patient.getHealthInsurance())

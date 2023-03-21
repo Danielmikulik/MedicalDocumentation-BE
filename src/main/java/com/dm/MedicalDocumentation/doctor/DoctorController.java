@@ -47,4 +47,16 @@ public class DoctorController {
         service.changeDepartment(request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PostMapping
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<String> createPerson(
+            @RequestBody DoctorRequest request
+    ) {
+        if (service.recordExists(request)) {
+            throw new RecordAlreadyExistsException("A person with birth number: " + request.getPerson() + ", already is a doctor.");
+        }
+        service.createDoctor(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

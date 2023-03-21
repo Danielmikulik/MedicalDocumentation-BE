@@ -11,6 +11,7 @@ import com.dm.MedicalDocumentation.user.User;
 import com.dm.MedicalDocumentation.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,7 @@ public class PatientService {
                 && patient.get().getHealthInsurance().getInsuranceName().equals(request.getHealthInsurance());
     }
 
+    @Transactional
     public void changeHealthInsurance(PatientInsuranceChangeRequest request) {
         Patient patient = repository.findByPersonBirthNumber(request.getPatient())
                 .orElseThrow(() -> new IllegalArgumentException("No patient with given birthNumber found!"));
@@ -68,14 +70,20 @@ public class PatientService {
         patient.setHealthInsurance(healthInsurance);
         repository.save(patient);
 
-        patientInsuranceHistoryService.createHealthInsuranceHistory(patient);
+        patientInsuranceHistoryService.createHealthInsuranceHistory(patient, false);
     }
 
-    public boolean recordExists(String birthNumber) {
-        Optional<Patient> patient = repository.findByPersonBirthNumber(birthNumber);
-        return patient.isPresent();
+    public boolean recordExists(PatientRequest request) {
+        Optional<Patient> patient = repository.findByPersonBirthNumber(request.getPerson());
+        Optional<User> user = userRepository.findByUserLogin(request.getUserLogin());
+        Patient foundPatient = null;
+        if (user.isPresent()) {
+            foundPatient = user.get().getPatient();
+        }
+        return patient.isPresent() || foundPatient != null;
     }
 
+    @Transactional
     public void createPatient(PatientRequest request) {
         Person person = personRepository.findByBirthNumber(request.getPerson())
                 .orElseThrow(() -> new IllegalArgumentException("No person with birthNumber " + request.getPerson() + " exists."));
@@ -93,5 +101,8 @@ public class PatientService {
                 .healthInsurance(healthInsurance)
                 .build();
         repository.save(patient);
+
+        patientInsuranceHistoryService.createHealthInsuranceHistory(patient, true);
+
     }
 }
