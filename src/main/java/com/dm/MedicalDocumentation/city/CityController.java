@@ -7,12 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/city")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class CityController {
     private final CityService service;
+
+    @GetMapping("/all")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getDiseaseTypes() {
+        return ResponseEntity.ok(service.getCities());
+    }
 
     @PostMapping
     @RolesAllowed("ADMIN")
