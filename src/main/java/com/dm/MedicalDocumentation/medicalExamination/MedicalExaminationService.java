@@ -2,6 +2,8 @@ package com.dm.MedicalDocumentation.medicalExamination;
 
 import com.dm.MedicalDocumentation.accessRequest.AccessRequest;
 import com.dm.MedicalDocumentation.accessRequest.AccessRequestRepository;
+import com.dm.MedicalDocumentation.attachment.Attachment;
+import com.dm.MedicalDocumentation.attachment.AttachmentRepository;
 import com.dm.MedicalDocumentation.disease.Disease;
 import com.dm.MedicalDocumentation.disease.DiseaseRepository;
 import com.dm.MedicalDocumentation.disease.type.DiseaseType;
@@ -21,7 +23,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,6 +44,7 @@ public class MedicalExaminationService {
     private final DiseaseRepository diseaseRepository;
     private final DiseaseTypeRepository diseaseTypeRepository;
     private final ExaminationTypeRepository examinationTypeRepository;
+    private final AttachmentRepository attachmentRepository;
 
     public CustomPage<MedicalExamResponse> getPatientsExams(String userLogin, Pageable page) {
         Page<MedicalExamination> exams = repository.findByPatientUserUserLogin(userLogin, page);
@@ -136,6 +142,7 @@ public class MedicalExaminationService {
         return false;
     }
 
+    @Transactional
     public String createMedicalExam(String userLogin, MedicalExamRequest request) {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
@@ -173,10 +180,32 @@ public class MedicalExaminationService {
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .build();
-        repository.save(medicalExamination);
+        MedicalExamination exam = repository.save(medicalExamination);
 
+        if (request.getFile() != null
+                && !request.getFile().isEmpty()
+                && request.getReport() != null
+                && !request.getReport().isBlank()) {
+            createAttachment(request.getReport(), request.getFile(), exam);
+        }
 
+        return "created";
+    }
 
-        return "gut";
+    public void createAttachment(String report, MultipartFile file, MedicalExamination exam) {
+        byte[] image = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                image = file.getBytes();
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't convert file to byte[].", e);
+            }
+        }
+        Attachment attachment = Attachment.builder()
+                .report(report)
+                .file(image)
+                .medicalExamination(exam)
+                .build();
+        attachmentRepository.save(attachment);
     }
 }

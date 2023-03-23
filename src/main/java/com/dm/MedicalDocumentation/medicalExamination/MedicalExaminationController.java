@@ -9,10 +9,9 @@ import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/med_exams")
@@ -48,11 +47,11 @@ public class MedicalExaminationController {
         return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber.getValue(), isGeneralPractitioner, page));
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RolesAllowed("DOCTOR")
     public ResponseEntity<String> confirmAccessRequests(
             @RequestHeader(name="Authorization") String token,
-            @RequestBody MedicalExamRequest request
+            @ModelAttribute MedicalExamRequest request
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.createMedicalExam(userLogin, request));

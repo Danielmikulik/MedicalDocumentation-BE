@@ -14,8 +14,7 @@ public class AttachmentService {
     private final AttachmentRepository repository;
     public List<Attachment> getAttachmentForMedExam(long examId, String userLogin, Role role) {
         if (medService.hasUserAccess(examId, userLogin, role)) {
-            List<Attachment> result = repository.findByMedicalExaminationMedicalExaminationId(examId);
-            return result;
+            return repository.findByMedicalExaminationMedicalExaminationId(examId);
         }
         return null;
     }
