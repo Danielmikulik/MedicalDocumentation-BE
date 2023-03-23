@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.patient;
 
+import com.dm.MedicalDocumentation.GlobalConstants;
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
 import com.dm.MedicalDocumentation.request.StringRequest;
@@ -34,7 +35,7 @@ public class PatientController {
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         String department = (String) jwtService.extractClaim(token.substring(7), "department");
-        boolean isGeneralPractitioner = department.equalsIgnoreCase("Ambulancia všeobecného lekára");
+        boolean isGeneralPractitioner = department.equalsIgnoreCase(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC);
         return ResponseEntity.ok(service.getDoctorsPatients(userLogin, isGeneralPractitioner));
     }
 

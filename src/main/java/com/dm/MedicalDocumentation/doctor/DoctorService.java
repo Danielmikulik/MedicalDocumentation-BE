@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.doctor;
 
+import com.dm.MedicalDocumentation.GlobalConstants;
 import com.dm.MedicalDocumentation.doctor.history.DoctorHistoryService;
 import com.dm.MedicalDocumentation.hospital.Hospital;
 import com.dm.MedicalDocumentation.hospital.HospitalRepository;
@@ -8,6 +9,7 @@ import com.dm.MedicalDocumentation.hospital.department.DepartmentID;
 import com.dm.MedicalDocumentation.hospital.department.DepartmentRepository;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentTypeRepository;
+import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.person.Person;
 import com.dm.MedicalDocumentation.person.PersonRepository;
 import com.dm.MedicalDocumentation.response.userInfo.PublicDoctorInfoResponse;
@@ -31,6 +33,7 @@ public class DoctorService {
     private final DoctorHistoryService doctorHistoryService;
     private final PersonRepository personRepository;
     private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
     public PublicDoctorInfoResponse getDoctorInfo(long doctorId) {
         Doctor doctor = repository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given id found!"));
@@ -51,7 +54,7 @@ public class DoctorService {
     }
 
     public List<String> getAllGeneralPractitioners() {
-        DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName("Ambulancia všeobecného lekára")
+        DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC)
                 .orElseThrow(() -> new IllegalArgumentException("No department type Ambulancia všeobecného lekára found!"));
         List<Doctor> doctors = repository.findByDepartmentIdDepartmentType(departmentType);
         List<String> result = new ArrayList<>(doctors.size());
@@ -138,5 +141,14 @@ public class DoctorService {
         repository.save(doctor);
 
         doctorHistoryService.createDoctorHistoryRecord(doctor, true);
+    }
+
+    public Integer getDoctorsPatientCount(String userLogin) {
+        Doctor doctor = repository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given userLogin found!"));
+        return doctor.getDepartment().getId().getDepartmentType().getDepartmentTypeName()
+                .equals(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC)
+                ? patientRepository.generalPractitionersPatientsCount(doctor)
+                : patientRepository.doctorsPatientsCount(doctor);
     }
 }

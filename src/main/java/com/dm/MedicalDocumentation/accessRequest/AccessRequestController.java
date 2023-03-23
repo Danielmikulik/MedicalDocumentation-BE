@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.accessRequest;
 
+import com.dm.MedicalDocumentation.GlobalConstants;
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.AccessRequestRequest;
 import com.dm.MedicalDocumentation.request.IdArrayRequest;
@@ -91,7 +92,7 @@ public class AccessRequestController {
     private ResponseEntity<String> updateAccessRequests(String token, IdArrayRequest request, boolean isAccepted) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         String department = (String) jwtService.extractClaim(token.substring(7), "department");
-        if (!department.equalsIgnoreCase("Ambulancia všeobecného lekára")) {
+        if (!department.equalsIgnoreCase(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC)) {
             return ResponseEntity.badRequest().body("Only general practitioners can confirm access requests");
         }
         return ResponseEntity.ok(service.updateAccessRequests(userLogin, request.getIds(), isAccepted));

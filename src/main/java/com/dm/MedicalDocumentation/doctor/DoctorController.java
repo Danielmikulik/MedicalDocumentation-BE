@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.doctor;
 
+import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.exception.RecordAlreadyExistsException;
 import com.dm.MedicalDocumentation.response.userInfo.PublicDoctorInfoResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class DoctorController {
+    private final JwtService jwtService;
     private final DoctorService service;
 
     @GetMapping("/all")
@@ -34,6 +36,15 @@ public class DoctorController {
             @PathVariable("doctorId") long doctorId
     ) {
         return ResponseEntity.ok(service.getDoctorInfo(doctorId));
+    }
+
+    @GetMapping("/patient_count")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<Integer> getDoctorsPaTientCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getDoctorsPatientCount(userLogin));
     }
 
     @PostMapping("/department_change")
