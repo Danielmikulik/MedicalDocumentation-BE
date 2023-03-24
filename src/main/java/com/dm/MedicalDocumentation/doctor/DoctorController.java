@@ -40,7 +40,7 @@ public class DoctorController {
 
     @GetMapping("/patient_count")
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<Integer> getDoctorsPaTientCount(
+    public ResponseEntity<Integer> getDoctorsPatientCount(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));

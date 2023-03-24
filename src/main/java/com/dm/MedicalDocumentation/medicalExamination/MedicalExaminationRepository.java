@@ -34,4 +34,18 @@ public interface MedicalExaminationRepository extends JpaRepository<MedicalExami
             "ORDER BY me.startTime DESC")
     Page<MedicalExamination> findPatientsExamsWithinDepartmentAndWithAccess(Doctor doctor, DepartmentType departmentType,
                                                                             Patient patient, Pageable pageable);
+
+    @Query("SELECT COUNT(me) AS count, MONTH(me.startTime) AS month " +
+            "FROM MedicalExamination me " +
+            "WHERE me.doctor = ?1 " +
+            "AND me.startTime BETWEEN ?2 AND ?3 " +
+            "GROUP BY MONTH(me.startTime)")
+    List<Object[]> getDoctorExamCountByMonth(Doctor doctor, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT COUNT(me) AS count, MONTH(me.startTime) AS month " +
+            "FROM MedicalExamination me " +
+            "WHERE me.patient = ?1 " +
+            "AND me.startTime BETWEEN ?2 AND ?3 " +
+            "GROUP BY MONTH(me.startTime)")
+    List<Object[]> getPatientsExamCountByMonth(Patient patient, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -105,4 +105,10 @@ public class PatientService {
         patientInsuranceHistoryService.createHealthInsuranceHistory(patient, true);
 
     }
+
+    public Integer getPatientsDoctorsCount(String userLogin) {
+        Patient patient = repository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("No patient with given userLogin found!"));
+        return repository.patientsDoctorsCount(patient);
+    }
 }

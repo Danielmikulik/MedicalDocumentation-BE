@@ -33,6 +33,24 @@ public class MedicalExaminationController {
         return ResponseEntity.ok(service.getPatientsExams(userLogin, page));
     }
 
+    @GetMapping("/doctor_stats")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<MedExamCountResponse> getDoctorsExamCountsForLastYear(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, true));
+    }
+
+    @GetMapping("/patient_stats")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<MedExamCountResponse> getPatientsExamCountsForLastYear(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, false));
+    }
+
     @PostMapping("/doctor")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<CustomPage<MedicalExamResponse>> getDoctorsMedicalExams(

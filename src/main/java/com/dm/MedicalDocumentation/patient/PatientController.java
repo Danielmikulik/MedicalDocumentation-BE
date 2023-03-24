@@ -46,6 +46,15 @@ public class PatientController {
         return ResponseEntity.ok(service.getAllPatients());
     }
 
+    @GetMapping("/doctor_count")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<Integer> getPatientsDoctorsCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPatientsDoctorsCount(userLogin));
+    }
+
     @PostMapping("/health_insurance_change")
     @RolesAllowed("ADMIN")
     public ResponseEntity<Object> changeHealthInsurance(

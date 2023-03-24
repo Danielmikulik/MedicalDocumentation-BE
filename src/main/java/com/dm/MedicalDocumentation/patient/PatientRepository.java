@@ -19,6 +19,10 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
             "WHERE me.doctor = ?1")
     int doctorsPatientsCount(Doctor doctor);
 
+    @Query("SELECT COUNT(DISTINCT me.doctor) FROM MedicalExamination me " +
+            "WHERE me.patient = ?1")
+    int patientsDoctorsCount(Patient patient);
+
     @Query("SELECT DISTINCT p FROM Patient p " +
             "LEFT JOIN MedicalExamination me ON (me.patient = p) " +
             "WHERE p.generalPractitioner = ?1 " +
