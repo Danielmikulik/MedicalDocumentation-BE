@@ -48,4 +48,7 @@ public interface MedicalExaminationRepository extends JpaRepository<MedicalExami
             "AND me.startTime BETWEEN ?2 AND ?3 " +
             "GROUP BY MONTH(me.startTime)")
     List<Object[]> getPatientsExamCountByMonth(Patient patient, LocalDateTime startDate, LocalDateTime endDate);
+
+    Long countByDoctor(Doctor doctor);
+    Long countByPatient(Patient patient);
 }

@@ -51,6 +51,23 @@ public class MedicalExaminationController {
         return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, false));
     }
 
+    @GetMapping("/doctor_total_exam_count")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<Long> getDoctorsTotalExamCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getTotalExamCount(userLogin, true));
+    }
+    @GetMapping("/patient_total_exam_count")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<Long> getPatientsTotalExamCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getTotalExamCount(userLogin, false));
+    }
+
     @PostMapping("/doctor")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<CustomPage<MedicalExamResponse>> getDoctorsMedicalExams(
