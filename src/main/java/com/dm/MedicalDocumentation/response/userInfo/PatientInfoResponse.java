@@ -14,23 +14,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatientInfoResponse {
+    @JsonProperty("Meno a priezvisko")
+    private String fullName;
+    @JsonProperty("Rodné číslo")
+    private String birthNumber;
+    @JsonProperty("Praktický lekár")
+    private String generalPractitioner;
+    @JsonProperty("Zdravotná poisťovňa")
+    private String insurance;
     @JsonProperty("Prihlasovacie meno")
     private String userLogin;
     @JsonProperty("Email")
     private String email;
     @JsonProperty("Telefón")
     private String telephone;
-    @JsonFormat(pattern="dd.MM.yyyy HH:mm")
-    @JsonProperty("Registrovaný od")
-    private LocalDateTime registeredSince;
-    @JsonProperty("Meno a priezvisko")
-    private String fullName;
-    @JsonProperty("Rodné číslo")
-    private String birthNumber;
     @JsonProperty("Mesto")
     private String city;
     @JsonProperty("Adresa")
     private String address;
-    @JsonProperty("Zdravotná poisťovňa")
-    private String insurance;
+    @JsonFormat(pattern="dd.MM.yyyy HH:mm")
+    @JsonProperty("Registrovaný od")
+    private LocalDateTime registeredSince;
 }

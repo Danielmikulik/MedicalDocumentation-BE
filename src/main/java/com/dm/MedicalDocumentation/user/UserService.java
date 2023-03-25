@@ -27,15 +27,16 @@ public class UserService {
         Patient patient = user.getPatient();
         Person person = patient.getPerson();
         return PatientInfoResponse.builder()
+                .fullName(person.getFullName())
+                .birthNumber(person.getBirthNumber())
+                .generalPractitioner(patient.getGeneralPractitioner().getPerson().getFullName())
+                .insurance(patient.getHealthInsurance().getInsuranceName())
                 .userLogin(user.getUserLogin())
                 .email(user.getEmail())
                 .telephone(user.getTelephone())
-                .registeredSince(user.getCreatedAt())
-                .fullName(person.getFullName())
-                .birthNumber(person.getBirthNumber())
                 .city(person.getCity().getCityName())
                 .address(person.getAddress())
-                .insurance(patient.getHealthInsurance().getInsuranceName())
+                .registeredSince(user.getCreatedAt())
                 .build();
     }
 
