@@ -27,4 +27,5 @@ public class AccessRequestResponse {
     private LocalDateTime startTime;
     @JsonFormat(pattern="dd.MM.yyyy")
     private LocalDate accessibleUntil;
+    private String state;
 }

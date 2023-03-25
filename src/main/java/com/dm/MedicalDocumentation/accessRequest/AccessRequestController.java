@@ -54,12 +54,13 @@ public class AccessRequestController {
             @RequestParam(required = false) String patientBirthNumber,
             @RequestParam(required = false) String requestDoctor,
             @RequestParam(required = false) String examDoctor,
-            @RequestParam(required = false) String department
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String state
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         Pageable page = PageRequest.of(pageIndex, pageSize);
         return ResponseEntity.ok(service.getDoctorsPatientsAccessRequests(userLogin, page, showRejected, patientName,
-                patientBirthNumber, requestDoctor, examDoctor, department));
+                patientBirthNumber, requestDoctor, examDoctor, department, state));
     }
 
     @GetMapping("/doctors_patients")

@@ -77,21 +77,27 @@ public class AccessRequestService {
         return repository.saveAll(accessRequests).size();
     }
 
-    public CustomPage<AccessRequestResponse> getDoctorsPatientsAccessRequests(String userLogin, Pageable page, boolean showRejected, String patientName, String patientBirthNumber, String requestDoctor, String examDoctor, String department) {
+    public CustomPage<AccessRequestResponse> getDoctorsPatientsAccessRequests(String userLogin, Pageable page,
+            boolean showRejected, String patientName, String patientBirthNumber, String requestDoctor, String examDoctor,
+            String department, String state) {
         patientName = patientName == null ? "" : patientName;
         patientBirthNumber = patientBirthNumber == null ? "" : patientBirthNumber;
         requestDoctor = requestDoctor == null ? "" : requestDoctor;
         examDoctor = examDoctor == null ? "" : examDoctor;
         department = department == null ? "" : department;
+        boolean showOnlyRejected = state != null && "zamientnuté".startsWith(state.toLowerCase());
 
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
 
         Page<AccessRequest> requests = showRejected
-                ? repository.getGeneralPractitionersPatientsAllAccessRequests(doctor, patientName,
-                    patientBirthNumber, requestDoctor, examDoctor, department, page)
-                : repository.getGeneralPractitionersPatientsNotRejectedAccessRequests(doctor, patientName,
-                    patientBirthNumber, requestDoctor, examDoctor, department, page);
+                ? showOnlyRejected
+                    ? repository.getGeneralPractitionersPatientsRejectedAccessRequests(doctor, patientName,
+                        patientBirthNumber, requestDoctor, examDoctor, department, page)
+                    : repository.getGeneralPractitionersPatientsAllAccessRequests(doctor, patientName,
+                        patientBirthNumber, requestDoctor, examDoctor, department, page)
+                : repository.getGeneralPractitionersPatientsNonRejectedAccessRequests(doctor, patientName,
+                        patientBirthNumber, requestDoctor, examDoctor, department, page);
 
         List<AccessRequestResponse> result = new ArrayList<>(requests.getContent().size());
         for (AccessRequest request : requests.getContent()) {
@@ -106,6 +112,7 @@ public class AccessRequestService {
                             .department(request.getMedicalExamination().getDepartmentType().getDepartmentTypeName())
                             .startTime(request.getMedicalExamination().getStartTime())
                             .accessibleUntil(request.getAccessibleUntil())
+                            .state(request.getRejected() ? "zamietnuté" : "nepotvrdené")
                     .build());
         }
         return new CustomPage<>(result, requests.getTotalElements(), requests.getTotalPages());
