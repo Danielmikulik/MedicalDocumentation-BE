@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.prescription;
 
+import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.patient.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +14,6 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
             "JOIN Prescription pr ON (pr.medication = m) " +
             "WHERE pr.patient = ?1")
     List<String> findPatientsMedications(Patient patient);
+    Long countByDoctor(Doctor doctor);
+    Long countByPatient(Patient patient);
 }

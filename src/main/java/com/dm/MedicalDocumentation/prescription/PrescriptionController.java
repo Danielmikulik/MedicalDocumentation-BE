@@ -56,4 +56,22 @@ public class PrescriptionController {
         service.createPrescription(userLogin, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/doctor_total_count")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<Long> getDoctorsTotalPrescriptionCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getDoctorsTotalPrescriptionCount(userLogin, true));
+    }
+
+    @GetMapping("/patient_total_count")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<Long> getPatientsTotalPrescriptionCount(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getDoctorsTotalPrescriptionCount(userLogin, false));
+    }
 }

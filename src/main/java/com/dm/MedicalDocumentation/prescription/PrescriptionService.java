@@ -76,4 +76,18 @@ public class PrescriptionService {
                 .build();
         repository.save(prescription);
     }
+
+    public Long getDoctorsTotalPrescriptionCount(String userLogin, boolean isDoctor) {
+        long count;
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                    .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
+            count = repository.countByDoctor(doctor);
+        } else {
+            Patient patient = patientRepository.findByUserUserLogin(userLogin)
+                    .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
+            count = repository.countByPatient(patient);
+        }
+        return count;
+    }
 }
