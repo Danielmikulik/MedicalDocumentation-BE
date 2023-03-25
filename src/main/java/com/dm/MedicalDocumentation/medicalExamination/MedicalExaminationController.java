@@ -4,6 +4,7 @@ import com.dm.MedicalDocumentation.GlobalConstants;
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.MedicalExamRequest;
 import com.dm.MedicalDocumentation.request.StringRequest;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.CustomPage;
 import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -35,7 +36,7 @@ public class MedicalExaminationController {
 
     @GetMapping("/doctor_stats")
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<MedExamCountResponse> getDoctorsExamCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getDoctorsExamCountsForLastYear(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
@@ -44,13 +45,12 @@ public class MedicalExaminationController {
 
     @GetMapping("/patient_stats")
     @RolesAllowed("PATIENT")
-    public ResponseEntity<MedExamCountResponse> getPatientsExamCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getPatientsExamCountsForLastYear(
             @RequestHeader (name="Authorization") String token
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, false));
     }
-
     @GetMapping("/doctor_total_exam_count")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<Long> getDoctorsTotalExamCount(
@@ -59,6 +59,7 @@ public class MedicalExaminationController {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.getTotalExamCount(userLogin, true));
     }
+
     @GetMapping("/patient_total_exam_count")
     @RolesAllowed("PATIENT")
     public ResponseEntity<Long> getPatientsTotalExamCount(

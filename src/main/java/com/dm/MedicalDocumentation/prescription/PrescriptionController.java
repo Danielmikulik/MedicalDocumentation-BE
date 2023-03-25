@@ -2,6 +2,7 @@ package com.dm.MedicalDocumentation.prescription;
 
 import com.dm.MedicalDocumentation.config.JwtService;
 import com.dm.MedicalDocumentation.request.StringRequest;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,15 @@ public class PrescriptionController {
         return ResponseEntity.ok(service.getDoctorsTotalPrescriptionCount(userLogin, true));
     }
 
+    @GetMapping("/doctor_stats")
+    @RolesAllowed("DOCTOR")
+    public ResponseEntity<CountsByMonthResponse> getDoctorsPrescriptionCountsForLastYear(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPrescriptionCountsForLastYear(userLogin, true));
+    }
+
     @GetMapping("/patient_total_count")
     @RolesAllowed("PATIENT")
     public ResponseEntity<Long> getPatientsTotalPrescriptionCount(
@@ -73,5 +83,23 @@ public class PrescriptionController {
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         return ResponseEntity.ok(service.getDoctorsTotalPrescriptionCount(userLogin, false));
+    }
+
+    @GetMapping("/patient_to_retrieve")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<Long> getPatientsPrescriptionCountToRetrieve(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPatientsPrescriptionCountToRetrieve(userLogin));
+    }
+
+    @GetMapping("/patient_stats")
+    @RolesAllowed("PATIENT")
+    public ResponseEntity<CountsByMonthResponse> getPatientsPrescriptionCountsForLastYear(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPrescriptionCountsForLastYear(userLogin, false));
     }
 }

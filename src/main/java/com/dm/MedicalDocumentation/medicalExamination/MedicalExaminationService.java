@@ -15,6 +15,7 @@ import com.dm.MedicalDocumentation.medicalExamination.type.ExaminationTypeReposi
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.request.MedicalExamRequest;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.CustomPage;
 import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import com.dm.MedicalDocumentation.user.Role;
@@ -213,7 +214,7 @@ public class MedicalExaminationService {
         attachmentRepository.save(attachment);
     }
 
-    public MedExamCountResponse getExamCountsForLastYear(String userLogin, boolean isDoctor) {
+    public CountsByMonthResponse getExamCountsForLastYear(String userLogin, boolean isDoctor) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
         LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
@@ -245,7 +246,7 @@ public class MedicalExaminationService {
             }
             counts.add(countInMonth);
         }
-        return MedExamCountResponse.builder()
+        return CountsByMonthResponse.builder()
                 .counts(counts)
                 .months(months)
                 .build();

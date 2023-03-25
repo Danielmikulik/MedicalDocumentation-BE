@@ -6,14 +6,19 @@ import com.dm.MedicalDocumentation.medication.Medication;
 import com.dm.MedicalDocumentation.medication.MedicationRepository;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.PrescriptionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -89,5 +94,50 @@ public class PrescriptionService {
             count = repository.countByPatient(patient);
         }
         return count;
+    }
+
+    public Long getPatientsPrescriptionCountToRetrieve(String userLogin) {
+        Patient patient = patientRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
+        LocalDateTime dateTimeSince = LocalDateTime.now().minusDays(7);
+        return repository.countByPatientAndPrescribedAtGreaterThanEqualAndRetrievedAtIsNull(patient, dateTimeSince);
+    }
+
+    public CountsByMonthResponse getPrescriptionCountsForLastYear(String userLogin, boolean isDoctor) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
+        LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
+        List<Object[]> data;
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                    .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
+            data = repository.getDoctorPrescriptionCountByMonth(doctor, startDate, endDate);
+        } else {
+            Patient patient = patientRepository.findByUserUserLogin(userLogin)
+                    .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
+            data = repository.getPatientsPrescriptionCountByMonth(patient, startDate, endDate);
+        }
+        int startMonth = startDate.getMonthValue();
+        List<Long> counts = new ArrayList<>(12);
+        List<String> months = new ArrayList<>(12);
+        for (int i = startMonth; i < startMonth + 12; i++) {
+            int month = ((i - 1) % 12) + 1;
+            String monthName = Month.of(month).getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("sk"));
+            months.add(monthName);
+
+            long countInMonth = 0;
+            //row[0] is count, row[1] is month
+            for (Object[] row : data) {
+                if ((int)row[1] == month) {
+                    countInMonth = (long) row[0];
+                    break;
+                }
+            }
+            counts.add(countInMonth);
+        }
+        return CountsByMonthResponse.builder()
+                .counts(counts)
+                .months(months)
+                .build();
     }
 }

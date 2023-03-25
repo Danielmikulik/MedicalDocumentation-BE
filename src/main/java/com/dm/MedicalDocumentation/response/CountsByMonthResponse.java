@@ -1,4 +1,4 @@
-package com.dm.MedicalDocumentation.medicalExamination;
+package com.dm.MedicalDocumentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MedExamCountResponse {
+public class CountsByMonthResponse {
     private List<Long> counts;
     private List<String> months;
 }
