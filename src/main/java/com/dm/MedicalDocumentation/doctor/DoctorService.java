@@ -151,4 +151,8 @@ public class DoctorService {
                 ? patientRepository.generalPractitionersPatientsCount(doctor)
                 : patientRepository.doctorsPatientsCount(doctor);
     }
+
+    public Long getDoctorCount() {
+        return repository.count();
+    }
 }

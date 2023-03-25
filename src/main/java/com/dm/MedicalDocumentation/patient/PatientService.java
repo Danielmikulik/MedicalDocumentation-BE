@@ -111,4 +111,8 @@ public class PatientService {
                 .orElseThrow(() -> new IllegalArgumentException("No patient with given userLogin found!"));
         return repository.patientsDoctorsCount(patient);
     }
+
+    public Long getPatientCount() {
+        return repository.count();
+    }
 }

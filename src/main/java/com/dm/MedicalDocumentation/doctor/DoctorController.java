@@ -70,4 +70,10 @@ public class DoctorController {
         service.createDoctor(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/count")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Long> getDoctorCount() {
+        return ResponseEntity.ok(service.getDoctorCount());
+    }
 }

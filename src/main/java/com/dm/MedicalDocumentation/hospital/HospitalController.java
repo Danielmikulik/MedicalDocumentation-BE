@@ -34,4 +34,10 @@ public class HospitalController {
         service.createHospital(request.getValue());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/count")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Long> getHospitalCount() {
+        return ResponseEntity.ok(service.getHospitalCount());
+    }
 }

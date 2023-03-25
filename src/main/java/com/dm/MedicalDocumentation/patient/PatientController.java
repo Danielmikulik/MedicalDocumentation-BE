@@ -78,4 +78,10 @@ public class PatientController {
         service.createPatient(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/count")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Long> getPatientCount() {
+        return ResponseEntity.ok(service.getPatientCount());
+    }
 }

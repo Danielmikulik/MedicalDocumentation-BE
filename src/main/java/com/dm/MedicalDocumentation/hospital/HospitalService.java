@@ -31,4 +31,8 @@ public class HospitalService {
         }
         return result;
     }
+
+    public Long getHospitalCount() {
+        return repository.count();
+    }
 }
