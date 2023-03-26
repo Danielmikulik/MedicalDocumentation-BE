@@ -6,12 +6,16 @@ import com.dm.MedicalDocumentation.hospital.department.Department;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.person.Person;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
+import com.dm.MedicalDocumentation.util.GraphDataUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,5 +91,13 @@ public class UserService {
             result.add(user.getUserLogin());
         }
         return result;
+    }
+
+    public CountsByMonthResponse getCreatedUserCountsForLastYear() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
+        LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
+        List<Object[]> data = repository.getNewUserCountByMonth(startDate, endDate);
+        return GraphDataUtil.getCountsByMonth(startDate, data);
     }
 }

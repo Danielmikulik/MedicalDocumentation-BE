@@ -19,6 +19,7 @@ import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.CustomPage;
 import com.dm.MedicalDocumentation.response.MedicalExamResponse;
 import com.dm.MedicalDocumentation.user.Role;
+import com.dm.MedicalDocumentation.util.GraphDataUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +32,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -228,28 +226,7 @@ public class MedicalExaminationService {
                     .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
             data = repository.getPatientsExamCountByMonth(patient, startDate, endDate);
         }
-        int startMonth = startDate.getMonthValue();
-        List<Long> counts = new ArrayList<>(12);
-        List<String> months = new ArrayList<>(12);
-        for (int i = startMonth; i < startMonth + 12; i++) {
-            int month = ((i - 1) % 12) + 1;
-            String monthName = Month.of(month).getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("sk"));
-            months.add(monthName);
-
-            long countInMonth = 0;
-            //row[0] is count, row[1] is month
-            for (Object[] row : data) {
-                if ((int)row[1] == month) {
-                    countInMonth = (long) row[0];
-                    break;
-                }
-            }
-            counts.add(countInMonth);
-        }
-        return CountsByMonthResponse.builder()
-                .counts(counts)
-                .months(months)
-                .build();
+        return GraphDataUtil.getCountsByMonth(startDate, data);
     }
 
     public Long getTotalExamCount(String userLogin, boolean isDoctor) {

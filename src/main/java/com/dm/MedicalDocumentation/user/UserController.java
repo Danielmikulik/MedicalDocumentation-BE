@@ -1,6 +1,7 @@
 package com.dm.MedicalDocumentation.user;
 
 import com.dm.MedicalDocumentation.config.JwtService;
+import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.PatientInfoResponse;
@@ -57,5 +58,11 @@ public class UserController {
     @RolesAllowed("ADMIN")
     public ResponseEntity<List<String>> getLogins() {
         return ResponseEntity.ok(service.getLogins());
+    }
+
+    @GetMapping("/created_last_year")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<CountsByMonthResponse> getCreatedUserCountsForLastYear() {
+        return ResponseEntity.ok(service.getCreatedUserCountsForLastYear());
     }
 }
