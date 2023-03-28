@@ -37,7 +37,7 @@ public class AccessRequestService {
     public List<AccessRequestGroupResponse> getAccessRequestsByDoctor(String userLogin) {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
-        List<Object[]> groups = repository.getAccessRequestCounts(doctor);
+        List<Object[]> groups = repository.getNonApprovedAccessRequestCounts(doctor);
         List<AccessRequestGroupResponse> result = new ArrayList<>(groups.size());
         for (Object[] group : groups) {
             Patient patient = (Patient) group[1];
@@ -46,6 +46,7 @@ public class AccessRequestService {
                     .patientName(patient.getPerson().getFullName())
                     .patientBirthNumber(patient.getPerson().getBirthNumber())
                     .department(((DepartmentType) group[2]).getDepartmentTypeName())
+                    .rejected((boolean) group[3])
                     .build());
         }
         return result;
@@ -62,10 +63,9 @@ public class AccessRequestService {
 
         List<AccessRequest> accessRequests = new ArrayList<>(exams.size());
         for (MedicalExamination exam : exams) {
-            if (repository.findByMedicalExaminationAndPatientAndDoctor(exam, patient, doctor).isEmpty()) {
+            if (repository.findByMedicalExaminationAndDoctorAndRejected(exam, doctor, false).isEmpty()) {
                 accessRequests.add(AccessRequest.builder()
                         .medicalExamination(exam)
-                        .patient(patient)
                         .doctor(doctor)
                         .approved(false)
                         .rejected(false)
@@ -103,8 +103,8 @@ public class AccessRequestService {
         for (AccessRequest request : requests.getContent()) {
             result.add(AccessRequestResponse.builder()
                             .id(request.getRequestId())
-                            .patientName(request.getPatient().getPerson().getFullName())
-                            .patientBirthNumber(request.getPatient().getPerson().getBirthNumber())
+                            .patientName(request.getMedicalExamination().getPatient().getPerson().getFullName())
+                            .patientBirthNumber(request.getMedicalExamination().getPatient().getPerson().getBirthNumber())
                             .requestDoctor(request.getDoctor().getPerson().getFullName())
                             .requestDoctorId(request.getDoctor().getDoctorId())
                             .examDoctor(request.getMedicalExamination().getDoctor().getPerson().getFullName())
@@ -137,11 +137,14 @@ public class AccessRequestService {
         List<AccessRequest> requests = new ArrayList<>(ids.size());
         for (long id : ids) {
             Optional<AccessRequest> request = repository.findById(id);
-            if (request.isPresent() && !request.get().getApproved() && !request.get().getRejected()
-                    && doctor.getDoctorId().equals(request.get().getPatient().getGeneralPractitioner().getDoctorId())) {
+            if (request.isPresent() && !request.get().getApproved()
+                    && doctor.getDoctorId().equals(request.get().getMedicalExamination().getPatient().getGeneralPractitioner().getDoctorId())) {
                 if (isApproved) {
                     request.get().setApproved(true);
+                    request.get().setRejected(false);
                 } else {
+                    if (request.get().getRejected()) continue;
+                    request.get().setApproved(false);
                     request.get().setRejected(true);
                 }
                 requests.add(request.get());

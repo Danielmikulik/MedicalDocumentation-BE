@@ -15,4 +15,5 @@ public class AccessRequestGroupResponse {
     private String patientName;
     private String patientBirthNumber;
     private String department;
+    private boolean rejected;
 }
