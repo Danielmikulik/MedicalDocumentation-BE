@@ -8,17 +8,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface AccessRequestRepository extends JpaRepository<AccessRequest, Long> {
     List<AccessRequest> findByMedicalExaminationMedicalExaminationId(Long medicalExamId);
-    Optional<AccessRequest> findByMedicalExaminationAndDoctorAndRejected(
-            MedicalExamination medicalExamination, Doctor doctor, boolean rejected);
+    Optional<AccessRequest> findByMedicalExaminationAndDoctorAndRejectedAndAccessibleUntilGreaterThanEqual(
+            MedicalExamination medicalExamination, Doctor doctor, boolean rejected, LocalDate accessibleUntil);
 
     @Query("SELECT count(*), me.patient, me.departmentType, ar.rejected FROM AccessRequest ar " +
             "JOIN MedicalExamination me ON (ar.medicalExamination = me) " +
             "WHERE ar.doctor = ?1 AND ar.approved = false " +
+            "AND ar.accessibleUntil >= CURRENT_DATE " +
             "GROUP BY me.patient, me.departmentType, ar.rejected")
     List<Object[]> getNonApprovedAccessRequestCounts(Doctor doctor);
 
@@ -26,6 +28,7 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
             "FROM AccessRequest ar " +
             "JOIN MedicalExamination me ON (ar.medicalExamination = me) " +
             "WHERE me.patient.generalPractitioner = ?1 " +
+            "AND ar.accessibleUntil >= CURRENT_DATE " +
             "AND ar.approved = false " +
             "AND ar.rejected = false " +
             "AND me.patient.person.name || ' ' || me.patient.person.surname LIKE %?2% " +
@@ -41,6 +44,7 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
             "FROM AccessRequest ar " +
             "JOIN MedicalExamination me ON (ar.medicalExamination = me) " +
             "WHERE me.patient.generalPractitioner = ?1 " +
+            "AND ar.accessibleUntil >= CURRENT_DATE " +
             "AND ar.approved = false " +
             "AND me.patient.person.name || ' ' || me.patient.person.surname LIKE %?2% " +
             "AND me.patient.person.birthNumber LIKE %?3% " +
@@ -55,6 +59,7 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
             "FROM AccessRequest ar " +
             "JOIN MedicalExamination me ON (ar.medicalExamination = me) " +
             "WHERE me.patient.generalPractitioner = ?1 " +
+            "AND ar.accessibleUntil >= CURRENT_DATE " +
             "AND ar.approved = false " +
             "AND ar.rejected = true " +
             "AND me.patient.person.name || ' ' || me.patient.person.surname LIKE %?2% " +
