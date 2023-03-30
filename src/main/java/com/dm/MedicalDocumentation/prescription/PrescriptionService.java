@@ -13,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -101,20 +100,38 @@ public class PrescriptionService {
         return repository.countByPatientAndPrescribedAtGreaterThanEqualAndRetrievedAtIsNull(patient, dateTimeSince);
     }
 
-    public CountsByMonthResponse getPrescriptionCountsForLastYear(String userLogin, boolean isDoctor) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
-        LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
+    public CountsByMonthResponse getPrescriptionCountsForLastYear(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
+        boolean monthInterval = interval.equals("month");
+        LocalDateTime endDate;
+        LocalDateTime startDate;
+        if (monthInterval) {
+            startDate = dateSince.atStartOfDay().withDayOfMonth(1);
+            if (dateUntil.getMonth() == Month.FEBRUARY && !Year.isLeap(dateUntil.getYear())) {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(28).with(LocalTime.MAX);
+            } else {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(dateUntil.getMonth().maxLength()).with(LocalTime.MAX);
+            }
+        } else {
+            DayOfWeek startDay = dateSince.getDayOfWeek();
+            startDate = dateSince.minusDays(startDay.getValue() - 1).atStartOfDay();
+            DayOfWeek endDay = dateUntil.getDayOfWeek();
+            endDate = dateUntil.plusDays(7 - endDay.getValue()).atTime(LocalTime.MAX);
+        }
+
         List<Object[]> data;
         if (isDoctor) {
             Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                     .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
-            data = repository.getDoctorPrescriptionCountByMonth(doctor, startDate, endDate);
+            data = monthInterval
+                    ? repository.getDoctorPrescriptionCountByMonth(doctor, startDate, endDate)
+                    : repository.getDoctorPrescriptionCountByWeek(doctor, startDate, endDate);
         } else {
             Patient patient = patientRepository.findByUserUserLogin(userLogin)
                     .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
-            data = repository.getPatientsPrescriptionCountByMonth(patient, startDate, endDate);
+            data = monthInterval
+                    ? repository.getPatientsPrescriptionCountByMonth(patient, startDate, endDate)
+                    : repository.getPatientsPrescriptionCountByWeek(patient, startDate, endDate);
         }
-        return GraphDataUtil.getCountsByMonth(startDate, data);
+        return GraphDataUtil.getCountsByInterval(startDate, endDate, data, monthInterval);
     }
 }

@@ -19,17 +19,31 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
     Long countByPatient(Patient patient);
     Long countByPatientAndPrescribedAtGreaterThanEqualAndRetrievedAtIsNull(Patient patient, LocalDateTime prescribedAt);
 
-    @Query("SELECT COUNT(pr) AS count, MONTH(pr.prescribedAt) AS month " +
+    @Query("SELECT COUNT(pr) AS count, MONTH(pr.prescribedAt), YEAR(pr.prescribedAt) " +
             "FROM Prescription pr " +
             "WHERE pr.doctor = ?1 " +
             "AND pr.prescribedAt BETWEEN ?2 AND ?3 " +
-            "GROUP BY MONTH(pr.prescribedAt)")
+            "GROUP BY MONTH(pr.prescribedAt), YEAR(pr.prescribedAt)")
     List<Object[]> getDoctorPrescriptionCountByMonth(Doctor doctor, LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("SELECT COUNT(pr) AS count, MONTH(pr.prescribedAt) AS month " +
+    @Query("SELECT COUNT(pr) AS count, WEEK(pr.prescribedAt), YEAR(pr.prescribedAt) " +
+            "FROM Prescription pr " +
+            "WHERE pr.doctor = ?1 " +
+            "AND pr.prescribedAt BETWEEN ?2 AND ?3 " +
+            "GROUP BY WEEK(pr.prescribedAt), YEAR(pr.prescribedAt)")
+    List<Object[]> getDoctorPrescriptionCountByWeek(Doctor doctor, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT COUNT(pr) AS count, MONTH(pr.prescribedAt), YEAR(pr.prescribedAt) " +
             "FROM Prescription pr " +
             "WHERE pr.patient = ?1 " +
             "AND pr.prescribedAt BETWEEN ?2 AND ?3 " +
-            "GROUP BY MONTH(pr.prescribedAt)")
+            "GROUP BY MONTH(pr.prescribedAt), YEAR(pr.prescribedAt)")
     List<Object[]> getPatientsPrescriptionCountByMonth(Patient patient, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT COUNT(pr) AS count, WEEK(pr.prescribedAt), YEAR(pr.prescribedAt) " +
+            "FROM Prescription pr " +
+            "WHERE pr.patient = ?1 " +
+            "AND pr.prescribedAt BETWEEN ?2 AND ?3 " +
+            "GROUP BY WEEK(pr.prescribedAt), YEAR(pr.prescribedAt)")
+    List<Object[]> getPatientsPrescriptionCountByWeek(Patient patient, LocalDateTime startDate, LocalDateTime endDate);
 }

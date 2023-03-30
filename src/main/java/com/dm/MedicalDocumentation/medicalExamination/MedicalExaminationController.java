@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/med_exams")
 @RequiredArgsConstructor
@@ -37,19 +39,25 @@ public class MedicalExaminationController {
     @GetMapping("/doctor_stats")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<CountsByMonthResponse> getDoctorsExamCountsForLastYear(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestParam LocalDate dateSince,
+            @RequestParam LocalDate dateUntil,
+            @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, true));
+        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, dateSince, dateUntil, interval, true));
     }
 
     @GetMapping("/patient_stats")
     @RolesAllowed("PATIENT")
     public ResponseEntity<CountsByMonthResponse> getPatientsExamCountsForLastYear(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestParam LocalDate dateSince,
+            @RequestParam LocalDate dateUntil,
+            @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, false));
+        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, dateSince, dateUntil, interval, false));
     }
     @GetMapping("/doctor_total_exam_count")
     @RolesAllowed("DOCTOR")
@@ -86,7 +94,7 @@ public class MedicalExaminationController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<String> confirmAccessRequests(
+    public ResponseEntity<String> createMedExam(
             @RequestHeader(name="Authorization") String token,
             @ModelAttribute MedicalExamRequest request
     ) {

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -62,7 +63,11 @@ public class UserController {
 
     @GetMapping("/created_last_year")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<CountsByMonthResponse> getCreatedUserCountsForLastYear() {
-        return ResponseEntity.ok(service.getCreatedUserCountsForLastYear());
+    public ResponseEntity<CountsByMonthResponse> getCreatedUserCountsForLastYear(
+            @RequestParam LocalDate dateSince,
+            @RequestParam LocalDate dateUntil,
+            @RequestParam String interval
+    ) {
+        return ResponseEntity.ok(service.getCreatedUserCountsForLastYear(dateSince, dateUntil, interval));
     }
 }

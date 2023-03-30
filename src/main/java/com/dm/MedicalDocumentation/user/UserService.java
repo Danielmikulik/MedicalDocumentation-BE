@@ -14,8 +14,7 @@ import com.dm.MedicalDocumentation.util.GraphDataUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,11 +92,26 @@ public class UserService {
         return result;
     }
 
-    public CountsByMonthResponse getCreatedUserCountsForLastYear() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
-        LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
-        List<Object[]> data = repository.getNewUserCountByMonth(startDate, endDate);
-        return GraphDataUtil.getCountsByMonth(startDate, data);
+    public CountsByMonthResponse getCreatedUserCountsForLastYear(LocalDate dateSince, LocalDate dateUntil, String interval) {
+        boolean monthInterval = interval.equals("month");
+        LocalDateTime endDate;
+        LocalDateTime startDate;
+        if (monthInterval) {
+            startDate = dateSince.atStartOfDay().withDayOfMonth(1);
+            if (dateUntil.getMonth() == Month.FEBRUARY && !Year.isLeap(dateUntil.getYear())) {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(28).with(LocalTime.MAX);
+            } else {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(dateUntil.getMonth().maxLength()).with(LocalTime.MAX);
+            }
+        } else {
+            DayOfWeek startDay = dateSince.getDayOfWeek();
+            startDate = dateSince.minusDays(startDay.getValue() - 1).atStartOfDay();
+            DayOfWeek endDay = dateUntil.getDayOfWeek();
+            endDate = dateUntil.plusDays(7 - endDay.getValue()).atTime(LocalTime.MAX);
+        }
+        List<Object[]> data = monthInterval
+                ? repository.getNewUserCountByMonth(startDate, endDate)
+                : repository.getNewUserCountByWeek(startDate, endDate);
+        return GraphDataUtil.getCountsByInterval(startDate, endDate, data, monthInterval);
     }
 }

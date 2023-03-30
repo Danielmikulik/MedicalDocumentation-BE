@@ -29,9 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -212,21 +210,39 @@ public class MedicalExaminationService {
         attachmentRepository.save(attachment);
     }
 
-    public CountsByMonthResponse getExamCountsForLastYear(String userLogin, boolean isDoctor) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(now.getMonth().maxLength()).with(LocalTime.MAX);
-        LocalDateTime startDate = endDate.minusMonths(11).withDayOfMonth(1).with(LocalTime.MIN);
+    public CountsByMonthResponse getExamCountsForLastYear(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
+        boolean monthInterval = interval.equals("month");
+        LocalDateTime endDate;
+        LocalDateTime startDate;
+        if (monthInterval) {
+            startDate = dateSince.atStartOfDay().withDayOfMonth(1);
+            if (dateUntil.getMonth() == Month.FEBRUARY && !Year.isLeap(dateUntil.getYear())) {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(28).with(LocalTime.MAX);
+            } else {
+                endDate = dateUntil.atStartOfDay().withDayOfMonth(dateUntil.getMonth().maxLength()).with(LocalTime.MAX);
+            }
+        } else {
+            DayOfWeek startDay = dateSince.getDayOfWeek();
+            startDate = dateSince.minusDays(startDay.getValue() - 1).atStartOfDay();
+            DayOfWeek endDay = dateUntil.getDayOfWeek();
+            endDate = dateUntil.plusDays(7 - endDay.getValue()).atTime(LocalTime.MAX);
+        }
+
         List<Object[]> data;
         if (isDoctor) {
             Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                     .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
-            data = repository.getDoctorExamCountByMonth(doctor, startDate, endDate);
+            data = monthInterval
+                    ? repository.getDoctorExamCountByMonth(doctor, startDate, endDate)
+                    : repository.getDoctorExamCountByWeek(doctor, startDate, endDate);
         } else {
             Patient patient = patientRepository.findByUserUserLogin(userLogin)
                     .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
-            data = repository.getPatientsExamCountByMonth(patient, startDate, endDate);
+            data = monthInterval
+                    ? repository.getPatientsExamCountByMonth(patient, startDate, endDate)
+                    : repository.getPatientsExamCountByWeek(patient, startDate, endDate);
         }
-        return GraphDataUtil.getCountsByMonth(startDate, data);
+        return GraphDataUtil.getCountsByInterval(startDate, endDate, data, monthInterval);
     }
 
     public Long getTotalExamCount(String userLogin, boolean isDoctor) {

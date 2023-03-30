@@ -1,5 +1,7 @@
 package com.dm.MedicalDocumentation.hospital.department.type;
 
+import com.dm.MedicalDocumentation.doctor.Doctor;
+import com.dm.MedicalDocumentation.doctor.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DepartmentTypeService {
     private final DepartmentTypeRepository repository;
+    private final DoctorRepository doctorRepository;
     public List<String> getDepartments() {
         List<DepartmentType> departmentTypes = repository.findAll();
         List<String> result = new ArrayList<>(departmentTypes.size());
@@ -30,5 +33,11 @@ public class DepartmentTypeService {
     public boolean recordExists(String name) {
         Optional<DepartmentType> departmentType = repository.findByDepartmentTypeName(name);
         return departmentType.isPresent();
+    }
+
+    public List<String> getDoctorsDepartmentTypes(String userLogin) {
+        Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("No doctor with given userLogin found!"));
+        return repository.getDoctorsHistoryDepartmentTypes(doctor);
     }
 }

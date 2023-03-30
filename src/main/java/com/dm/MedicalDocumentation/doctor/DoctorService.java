@@ -1,6 +1,8 @@
 package com.dm.MedicalDocumentation.doctor;
 
 import com.dm.MedicalDocumentation.GlobalConstants;
+import com.dm.MedicalDocumentation.disease.type.DiseaseType;
+import com.dm.MedicalDocumentation.disease.type.DiseaseTypeRepository;
 import com.dm.MedicalDocumentation.doctor.history.DoctorHistoryService;
 import com.dm.MedicalDocumentation.hospital.Hospital;
 import com.dm.MedicalDocumentation.hospital.HospitalRepository;
@@ -34,6 +36,8 @@ public class DoctorService {
     private final PersonRepository personRepository;
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
+    private final DiseaseTypeRepository diseaseTypeRepository;
+
     public PublicDoctorInfoResponse getDoctorInfo(long doctorId) {
         Doctor doctor = repository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given id found!"));
@@ -143,13 +147,22 @@ public class DoctorService {
         doctorHistoryService.createDoctorHistoryRecord(doctor, true);
     }
 
-    public Integer getDoctorsPatientCount(String userLogin) {
+    public Integer getDoctorsPatientCount(String userLogin, String diseaseTypeName) {
         Doctor doctor = repository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given userLogin found!"));
-        return doctor.getDepartment().getId().getDepartmentType().getDepartmentTypeName()
-                .equals(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC)
-                ? patientRepository.generalPractitionersPatientsCount(doctor)
-                : patientRepository.doctorsPatientsCount(doctor);
+        boolean isGeneralPractitioner = doctor.getDepartment().getId().getDepartmentType().getDepartmentTypeName()
+                .equals(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC);
+        if (!diseaseTypeName.isBlank()) {
+            DiseaseType diseaseType = diseaseTypeRepository.findByDiseaseTypeName(diseaseTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("Disease type " + diseaseTypeName + "does not exist."));
+            return isGeneralPractitioner
+                    ? patientRepository.generalPractitionersPatientsCountWithDisease(doctor, diseaseType)
+                    : patientRepository.doctorsPatientsCountWithDisease(doctor, diseaseType);
+        } else {
+            return isGeneralPractitioner
+                    ? patientRepository.generalPractitionersPatientsCount(doctor)
+                    : patientRepository.doctorsPatientsCount(doctor);
+        }
     }
 
     public Long getDoctorCount() {

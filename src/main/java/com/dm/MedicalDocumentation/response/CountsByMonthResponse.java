@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 public class CountsByMonthResponse {
     private List<Long> counts;
-    private List<String> months;
+    private List<String> intervals;
 }
