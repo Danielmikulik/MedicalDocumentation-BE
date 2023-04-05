@@ -20,7 +20,6 @@ public class DepartmentTypeController {
     private final DepartmentTypeService service;
 
     @GetMapping("/all")
-    @RolesAllowed({"DOCTOR", "ADMIN"})
     public ResponseEntity<List<String>> getDepartmentTypes() {
         return ResponseEntity.ok(service.getDepartments());
     }

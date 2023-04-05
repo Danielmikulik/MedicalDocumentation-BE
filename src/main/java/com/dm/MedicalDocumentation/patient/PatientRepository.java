@@ -2,6 +2,7 @@ package com.dm.MedicalDocumentation.patient;
 
 import com.dm.MedicalDocumentation.disease.type.DiseaseType;
 import com.dm.MedicalDocumentation.doctor.Doctor;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,6 +20,11 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     @Query("SELECT COUNT(DISTINCT me.doctor) FROM MedicalExamination me " +
             "WHERE me.patient = ?1")
     int patientsDoctorsCount(Patient patient);
+
+    @Query("SELECT COUNT(DISTINCT me.doctor) FROM MedicalExamination me " +
+            "WHERE me.patient = ?1 " +
+            "AND me.departmentType = ?2")
+    int patientsDoctorsCountByDepartmentType(Patient patient, DepartmentType departmentType);
 
     @Query("SELECT DISTINCT p FROM Patient p " +
             "LEFT JOIN MedicalExamination me ON (me.patient = p) " +
@@ -39,7 +45,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
             "JOIN Disease d ON (d.patient = me.patient) " +
             "WHERE me.doctor = ?1 " +
             "AND d.diseaseType = ?2 " +
-            "AND d.diagnosed <= me.startTime " +
+            "AND d.diagnosed <= me.endTime " +
             "AND (d.cured IS NULL OR d.cured >= me.startTime)")
     int doctorsPatientsCountWithDisease(Doctor doctor, DiseaseType diseaseType);
 
@@ -48,7 +54,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
             "JOIN Disease d ON (d.patient = me.patient) " +
             "WHERE (p.generalPractitioner = ?1 OR me.doctor = ?1) " +
             "AND d.diseaseType = ?2 " +
-            "AND d.diagnosed <= me.startTime " +
+            "AND d.diagnosed <= me.endTime " +
             "AND (d.cured IS NULL OR d.cured >= me.startTime)")
     int generalPractitionersPatientsCountWithDisease(Doctor generalPractitioner, DiseaseType diseaseType);
 }

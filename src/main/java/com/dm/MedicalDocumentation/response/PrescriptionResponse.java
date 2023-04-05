@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrescriptionResponse {
+    private long prescriptionId;
     private String medicationName;
     private String medicationAmount;
     private int packageCount;

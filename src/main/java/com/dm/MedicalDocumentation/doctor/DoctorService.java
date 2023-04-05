@@ -59,7 +59,7 @@ public class DoctorService {
 
     public List<String> getAllGeneralPractitioners() {
         DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC)
-                .orElseThrow(() -> new IllegalArgumentException("No department type Ambulancia všeobecného lekára found!"));
+                .orElseThrow(() -> new IllegalArgumentException("No department type " + GlobalConstants.GENERAL_PRACTITIONERS_CLINIC + " found!"));
         List<Doctor> doctors = repository.findByDepartmentIdDepartmentType(departmentType);
         List<String> result = new ArrayList<>(doctors.size());
         for (Doctor doctor : doctors) {
@@ -120,7 +120,7 @@ public class DoctorService {
         Hospital hospital = hospitalRepository.findByHospitalName(request.getHospital())
                 .orElseThrow(() -> new IllegalArgumentException("No hospital with given name found!"));
         DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(request.getDepartmentType())
-                .orElseThrow(() -> new IllegalArgumentException("No doctor with given birthNumber found!"));
+                .orElseThrow(() -> new IllegalArgumentException("No department with given name found!"));
         User user = userRepository.findByUserLogin(request.getUserLogin())
                 .orElseThrow(() -> new IllegalArgumentException("No user with login " + request.getUserLogin() + " exists."));
 
@@ -165,7 +165,12 @@ public class DoctorService {
         }
     }
 
-    public Long getDoctorCount() {
+    public Long getDoctorCount(String departmentTypeName) {
+        if (!departmentTypeName.isBlank()) {
+            DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(departmentTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("No department with given name found!"));
+            return repository.countByDepartmentIdDepartmentType(departmentType);
+        }
         return repository.count();
     }
 }

@@ -10,6 +10,8 @@ import com.dm.MedicalDocumentation.disease.type.DiseaseType;
 import com.dm.MedicalDocumentation.disease.type.DiseaseTypeRepository;
 import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.doctor.DoctorRepository;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentTypeRepository;
 import com.dm.MedicalDocumentation.medicalExamination.type.ExaminationType;
 import com.dm.MedicalDocumentation.medicalExamination.type.ExaminationTypeRepository;
 import com.dm.MedicalDocumentation.patient.Patient;
@@ -46,6 +48,7 @@ public class MedicalExaminationService {
     private final DiseaseTypeRepository diseaseTypeRepository;
     private final ExaminationTypeRepository examinationTypeRepository;
     private final AttachmentRepository attachmentRepository;
+    private final DepartmentTypeRepository departmentTypeRepository;
 
     public CustomPage<MedicalExamResponse> getPatientsExams(String userLogin, Pageable page) {
         Page<MedicalExamination> exams = repository.findByPatientUserUserLogin(userLogin, page);
@@ -160,7 +163,7 @@ public class MedicalExaminationService {
                 disease = Disease.builder()
                         .diseaseType(diseaseType)
                         .patient(patient)
-                        .diagnosed(LocalDateTime.now())
+                        .diagnosed(request.getEndTime())
                         .cured(null)
                         .build();
                 disease = diseaseRepository.save(disease);
@@ -183,10 +186,8 @@ public class MedicalExaminationService {
                 .build();
         MedicalExamination exam = repository.save(medicalExamination);
 
-        if (request.getFile() != null
-                && !request.getFile().isEmpty()
-                && request.getReport() != null
-                && !request.getReport().isBlank()) {
+        if ((request.getFile() != null && !request.getFile().isEmpty())
+                || (request.getReport() != null && !request.getReport().isBlank())) {
             createAttachment(request.getReport(), request.getFile(), exam);
         }
 
@@ -245,17 +246,25 @@ public class MedicalExaminationService {
         return GraphDataUtil.getCountsByInterval(startDate, endDate, data, monthInterval);
     }
 
-    public Long getTotalExamCount(String userLogin, boolean isDoctor) {
-        long count;
-        if (isDoctor) {
-            Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
-                    .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
-            count = repository.countByDoctor(doctor);
-        } else {
-            Patient patient = patientRepository.findByUserUserLogin(userLogin)
-                    .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
-            count = repository.countByPatient(patient);
+    public Long getPatientsTotalExamCount(String userLogin, String departmentTypeName) {
+        Patient patient = patientRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found!"));
+        if (!departmentTypeName.isBlank()) {
+            DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(departmentTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("Department type " + departmentTypeName + "does not exist."));
+            return repository.countByPatientAndDepartmentType(patient, departmentType);
         }
-        return count;
+        return repository.countByPatient(patient);
+    }
+
+    public Long getDoctorsTotalExamCount(String userLogin, String diseaseTypeName) {
+        Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found!"));
+        if (!diseaseTypeName.isBlank()) {
+            DiseaseType diseaseType = diseaseTypeRepository.findByDiseaseTypeName(diseaseTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("Disease type " + diseaseTypeName + "does not exist."));
+            return repository.countByDoctorAndDiseaseDiseaseType(doctor, diseaseType);
+        }
+        return repository.countByDoctor(doctor);
     }
 }

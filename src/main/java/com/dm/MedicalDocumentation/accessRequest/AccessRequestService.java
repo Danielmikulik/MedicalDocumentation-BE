@@ -12,9 +12,7 @@ import com.dm.MedicalDocumentation.request.AccessRequestRequest;
 import com.dm.MedicalDocumentation.response.AccessRequestGroupResponse;
 import com.dm.MedicalDocumentation.response.AccessRequestResponse;
 import com.dm.MedicalDocumentation.response.CustomPage;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,17 +24,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class AccessRequestService {
-
-    @Autowired
-    private DoctorRepository doctorRepository;
-    @Autowired
-    private MedicalExaminationRepository medExamRepository;
-    @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
-    private AccessRequestRepository repository;
+    private final DoctorRepository doctorRepository;
+    private final MedicalExaminationRepository medExamRepository;
+    private final PatientRepository patientRepository;
+    private final AccessRequestRepository repository;
     public List<AccessRequestGroupResponse> getAccessRequestsByDoctor(String userLogin) {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));

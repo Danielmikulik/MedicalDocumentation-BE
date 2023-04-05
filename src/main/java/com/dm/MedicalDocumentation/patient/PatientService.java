@@ -1,9 +1,14 @@
 package com.dm.MedicalDocumentation.patient;
 
+import com.dm.MedicalDocumentation.disease.DiseaseService;
+import com.dm.MedicalDocumentation.disease.type.DiseaseType;
+import com.dm.MedicalDocumentation.disease.type.DiseaseTypeRepository;
 import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.doctor.DoctorRepository;
 import com.dm.MedicalDocumentation.healthInsurance.HealthInsurance;
 import com.dm.MedicalDocumentation.healthInsurance.HealthInsuranceRepository;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
+import com.dm.MedicalDocumentation.hospital.department.type.DepartmentTypeRepository;
 import com.dm.MedicalDocumentation.patient.insuranceHistory.PatientInsuranceHistoryService;
 import com.dm.MedicalDocumentation.person.Person;
 import com.dm.MedicalDocumentation.person.PersonRepository;
@@ -20,12 +25,15 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PatientService {
+    private final DiseaseService diseaseService;
     private final PatientRepository repository;
     private final DoctorRepository doctorRepository;
     private final HealthInsuranceRepository healthInsuranceRepository;
     private final PatientInsuranceHistoryService patientInsuranceHistoryService;
     private final PersonRepository personRepository;
     private final UserRepository userRepository;
+    private final DepartmentTypeRepository departmentTypeRepository;
+    private final DiseaseTypeRepository diseaseTypeRepository;
 
     public String getPatientNameByBirthNumber(String birthNumber) {
         Optional<Patient> patient = repository.findByPersonBirthNumber(birthNumber);
@@ -106,13 +114,23 @@ public class PatientService {
 
     }
 
-    public Integer getPatientsDoctorsCount(String userLogin) {
+    public Integer getPatientsDoctorsCount(String userLogin, String departmentTypeName) {
         Patient patient = repository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No patient with given userLogin found!"));
+        if (!departmentTypeName.isBlank()) {
+            DepartmentType departmentType = departmentTypeRepository.findByDepartmentTypeName(departmentTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("No department type " + departmentTypeName + " found!"));
+            return repository.patientsDoctorsCountByDepartmentType(patient, departmentType);
+        }
         return repository.patientsDoctorsCount(patient);
     }
 
-    public Long getPatientCount() {
+    public Long getPatientCount(String diseaseTypeName) {
+        if (!diseaseTypeName.isBlank()) {
+            DiseaseType diseaseType = diseaseTypeRepository.findByDiseaseTypeName(diseaseTypeName)
+                    .orElseThrow(() -> new IllegalArgumentException("No department type " + diseaseTypeName + " found!"));
+            return diseaseService.getPatientCountWithDisease(diseaseType);
+        }
         return repository.count();
     }
 }

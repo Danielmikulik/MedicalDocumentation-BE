@@ -62,19 +62,21 @@ public class MedicalExaminationController {
     @GetMapping("/doctor_total_exam_count")
     @RolesAllowed("DOCTOR")
     public ResponseEntity<Long> getDoctorsTotalExamCount(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestParam String diseaseType
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getTotalExamCount(userLogin, true));
+        return ResponseEntity.ok(service.getDoctorsTotalExamCount(userLogin, diseaseType));
     }
 
     @GetMapping("/patient_total_exam_count")
     @RolesAllowed("PATIENT")
     public ResponseEntity<Long> getPatientsTotalExamCount(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestParam String departmentType
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getTotalExamCount(userLogin, false));
+        return ResponseEntity.ok(service.getPatientsTotalExamCount(userLogin, departmentType));
     }
 
     @PostMapping("/doctor")

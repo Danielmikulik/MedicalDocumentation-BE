@@ -6,6 +6,7 @@ import com.dm.MedicalDocumentation.hospital.department.Department;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.person.Person;
+import com.dm.MedicalDocumentation.pharmacy.Pharmacy;
 import com.dm.MedicalDocumentation.response.CountsByMonthResponse;
 import com.dm.MedicalDocumentation.response.userInfo.AdminInfoResponse;
 import com.dm.MedicalDocumentation.response.userInfo.DoctorInfoResponse;
@@ -38,6 +39,7 @@ public class UserService {
                 .email(user.getEmail())
                 .telephone(user.getTelephone())
                 .city(person.getCity().getCityName())
+                .zipCode(person.getCity().getZipCode())
                 .address(person.getAddress())
                 .registeredSince(user.getCreatedAt())
                 .build();
@@ -60,6 +62,7 @@ public class UserService {
                 .fullName(person.getFullName())
                 .birthNumber(person.getBirthNumber())
                 .city(person.getCity().getCityName())
+                .zipCode(person.getCity().getZipCode())
                 .address(person.getAddress())
                 .hospital(hospital.getHospitalName())
                 .department(departmentType.getDepartmentTypeName())
@@ -113,5 +116,21 @@ public class UserService {
                 ? repository.getNewUserCountByMonth(startDate, endDate)
                 : repository.getNewUserCountByWeek(startDate, endDate);
         return GraphDataUtil.getCountsByInterval(startDate, endDate, data, monthInterval);
+    }
+
+    public PharmacyInfoResponse getPharmacyInfo(String userLogin) {
+        User user = repository.findByUserLogin(userLogin)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid userLogin"));
+        Pharmacy pharmacy = user.getPharmacy();
+        return PharmacyInfoResponse.builder()
+                .name(pharmacy.getPharmacyName())
+                .userLogin(user.getUserLogin())
+                .email(user.getEmail())
+                .telephone(user.getTelephone())
+                .city(pharmacy.getCity().getCityName())
+                .zipCode(pharmacy.getCity().getZipCode())
+                .address(pharmacy.getAddress())
+                .registeredSince(user.getCreatedAt())
+                .build();
     }
 }

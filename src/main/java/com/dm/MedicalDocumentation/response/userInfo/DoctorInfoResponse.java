@@ -30,6 +30,8 @@ public class DoctorInfoResponse {
     private String telephone;
     @JsonProperty("Mesto")
     private String city;
+    @JsonProperty("PSČ")
+    private String zipCode;
     @JsonProperty("Adresa")
     private String address;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")

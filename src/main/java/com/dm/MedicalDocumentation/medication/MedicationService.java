@@ -1,9 +1,9 @@
 package com.dm.MedicalDocumentation.medication;
 
+import com.dm.MedicalDocumentation.util.ResultUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,15 +27,6 @@ public class MedicationService {
 
     public List<String> getMedications() {
         List<Medication> medications = repository.findAll();
-        List<String> result = new ArrayList<>(medications.size());
-        for (Medication medication : medications) {
-            StringBuilder medicationString = new StringBuilder(medication.getMedicationName());
-            medicationString.append(" ");
-            medicationString.append(medication.getAmount());
-            medicationString.append(" ");
-            medicationString.append(medication.getUnit());
-            result.add(medicationString.toString());
-        }
-        return result;
+        return ResultUtil.getMedicationsAsStringList(medications);
     }
 }

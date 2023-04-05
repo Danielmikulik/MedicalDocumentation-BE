@@ -49,10 +49,11 @@ public class PatientController {
     @GetMapping("/doctor_count")
     @RolesAllowed("PATIENT")
     public ResponseEntity<Integer> getPatientsDoctorsCount(
-            @RequestHeader (name="Authorization") String token
+            @RequestHeader (name="Authorization") String token,
+            @RequestParam String departmentType
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPatientsDoctorsCount(userLogin));
+        return ResponseEntity.ok(service.getPatientsDoctorsCount(userLogin, departmentType));
     }
 
     @PostMapping("/health_insurance_change")
@@ -81,7 +82,9 @@ public class PatientController {
 
     @GetMapping("/count")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<Long> getPatientCount() {
-        return ResponseEntity.ok(service.getPatientCount());
+    public ResponseEntity<Long> getPatientCount(
+            @RequestParam String diseaseType
+    ) {
+        return ResponseEntity.ok(service.getPatientCount(diseaseType));
     }
 }

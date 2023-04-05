@@ -1,5 +1,6 @@
 package com.dm.MedicalDocumentation.disease;
 
+import com.dm.MedicalDocumentation.disease.type.DiseaseType;
 import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.response.DiseaseResponse;
@@ -39,5 +40,9 @@ public class DiseaseService {
                     .build());
         }
         return results;
+    }
+
+    public long getPatientCountWithDisease(DiseaseType diseaseType) {
+        return repository.countByDiseaseTypeAndCuredIsNull(diseaseType);
     }
 }

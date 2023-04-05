@@ -2,6 +2,7 @@ package com.dm.MedicalDocumentation.user;
 
 import com.dm.MedicalDocumentation.doctor.Doctor;
 import com.dm.MedicalDocumentation.patient.Patient;
+import com.dm.MedicalDocumentation.pharmacy.Pharmacy;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,10 @@ public class User implements UserDetails {
     private Doctor doctor;
 
     @OneToOne(mappedBy = "user")
+
     private Patient patient;
+    @OneToOne(mappedBy = "user")
+    private Pharmacy pharmacy;
 
     @Column(nullable = false)
     private String email;

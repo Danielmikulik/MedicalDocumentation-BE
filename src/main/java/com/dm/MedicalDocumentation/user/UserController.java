@@ -49,6 +49,15 @@ public class UserController {
         return ResponseEntity.ok(service.getAdminInfo(userLogin));
     }
 
+    @GetMapping("/pharmacy")
+    @RolesAllowed("PHARMACY")
+    public ResponseEntity<PharmacyInfoResponse> getPharmacyInfo(
+            @RequestHeader (name="Authorization") String token
+    ) {
+        String userLogin = jwtService.extractUsername(token.substring(7));
+        return ResponseEntity.ok(service.getPharmacyInfo(userLogin));
+    }
+
     @GetMapping("/roles")
     @RolesAllowed("ADMIN")
     public ResponseEntity<List<String>> getRoles() {

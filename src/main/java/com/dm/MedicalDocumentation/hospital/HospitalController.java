@@ -37,7 +37,9 @@ public class HospitalController {
 
     @GetMapping("/count")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<Long> getHospitalCount() {
-        return ResponseEntity.ok(service.getHospitalCount());
+    public ResponseEntity<Long> getHospitalCount(
+            @RequestParam String departmentType
+    ) {
+        return ResponseEntity.ok(service.getHospitalCount(departmentType));
     }
 }
