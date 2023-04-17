@@ -132,15 +132,18 @@ class MedicalExaminationRepositoryTest {
 
         Pageable page = PageRequest.of(0, 10);
         Page<MedicalExamination> GPPatientExaminationsPage = underTest.findPatientsExamsWithinDepartmentAndWithAccess(generalPractitioner,
-                generalPractitioner.getDepartment().getId().getDepartmentType(), patient, page);
+                generalPractitioner.getDepartment().getId().getDepartmentType(), patient,
+                "", "", "", page);
         assertArrayEquals(new Object[]{medExam8, medExam7, medExam6, medExam5, medExam2, medExam1}, GPPatientExaminationsPage.getContent().toArray());
 
         Page<MedicalExamination> GPAllExaminationsPage = underTest.findAllExamsWithinDepartmentAndWithAccess(generalPractitioner,
-                generalPractitioner.getDepartment().getId().getDepartmentType(), List.of(patient, patient2), page);
+                generalPractitioner.getDepartment().getId().getDepartmentType(), List.of(patient, patient2),
+                "", "", "", page);
         assertArrayEquals(new Object[]{medExam8, medExam7, medExam6, medExam5, medExam4, medExam3, medExam2, medExam1}, GPAllExaminationsPage.getContent().toArray());
 
         Page<MedicalExamination> doctor3PatientsExaminationsPage = underTest.findPatientsExamsWithinDepartmentAndWithAccess(
-                doctor3, doctor3.getDepartment().getId().getDepartmentType(), patient, page);
+                doctor3, doctor3.getDepartment().getId().getDepartmentType(), patient,
+                "", "", "", page);
         assertArrayEquals(new Object[]{medExam8, medExam7, medExam6, medExam5}, doctor3PatientsExaminationsPage.getContent().toArray());
     }
 }

@@ -44,8 +44,8 @@ public class PatientService {
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new IllegalArgumentException("No doctor with given login found!"));
         List<Patient> patients = isGeneralPractitioner
-                ? repository.findGeneralPractitionersPatients(doctor)
-                : repository.findDoctorsPatients(doctor.getDoctorId());
+                ? repository.findGeneralPractitionersPatientsIncludingAR(doctor)
+                : repository.findDoctorsPatientsIncludingAR(doctor);
         List<String> result = new ArrayList<>(patients.size());
         for (Patient patient : patients) {
             result.add(patient.getPerson().getBirthNumber() + " " + patient.getPerson().getFullName());
@@ -83,12 +83,13 @@ public class PatientService {
 
     public boolean recordExists(PatientRequest request) {
         Optional<Patient> patient = repository.findByPersonBirthNumber(request.getPerson());
+        Optional<Doctor> doctor = doctorRepository.findByPersonBirthNumber(request.getPerson());
         Optional<User> user = userRepository.findByUserLogin(request.getUserLogin());
         Patient foundPatient = null;
         if (user.isPresent()) {
             foundPatient = user.get().getPatient();
         }
-        return patient.isPresent() || foundPatient != null;
+        return patient.isPresent() || doctor.isPresent() || foundPatient != null;
     }
 
     @Transactional

@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/med_exams")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class MedicalExaminationController {
     private final JwtService jwtService;
     private final MedicalExaminationService service;
@@ -29,35 +29,38 @@ public class MedicalExaminationController {
     public ResponseEntity<CustomPage<MedicalExamResponse>> getPatientsMedicalExams(
             @RequestHeader (name="Authorization") String token,
             @RequestParam int pageIndex,
-            @RequestParam int pageSize
+            @RequestParam int pageSize,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String doctor,
+            @RequestParam(required = false) String department
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
         Pageable page = PageRequest.of(pageIndex, pageSize);
-        return ResponseEntity.ok(service.getPatientsExams(userLogin, page));
+        return ResponseEntity.ok(service.getPatientsExams(userLogin, type, doctor, department, page));
     }
 
     @GetMapping("/doctor_stats")
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<CountsByMonthResponse> getDoctorsExamCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getDoctorsExamCountsForInterval(
             @RequestHeader (name="Authorization") String token,
             @RequestParam LocalDate dateSince,
             @RequestParam LocalDate dateUntil,
             @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, dateSince, dateUntil, interval, true));
+        return ResponseEntity.ok(service.getExamCountsForInterval(userLogin, dateSince, dateUntil, interval, true));
     }
 
     @GetMapping("/patient_stats")
     @RolesAllowed("PATIENT")
-    public ResponseEntity<CountsByMonthResponse> getPatientsExamCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getPatientsExamCountsForInterval(
             @RequestHeader (name="Authorization") String token,
             @RequestParam LocalDate dateSince,
             @RequestParam LocalDate dateUntil,
             @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getExamCountsForLastYear(userLogin, dateSince, dateUntil, interval, false));
+        return ResponseEntity.ok(service.getExamCountsForInterval(userLogin, dateSince, dateUntil, interval, false));
     }
     @GetMapping("/doctor_total_exam_count")
     @RolesAllowed("DOCTOR")
@@ -85,13 +88,17 @@ public class MedicalExaminationController {
             @RequestHeader (name="Authorization") String token,
             @RequestParam int pageIndex,
             @RequestParam int pageSize,
-            @RequestBody StringRequest birthNumber
+            @RequestBody StringRequest birthNumber,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String doctor,
+            @RequestParam(required = false) String department
             ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        String department = (String) jwtService.extractClaim(token.substring(7), "department");
-        boolean isGeneralPractitioner = department.equalsIgnoreCase(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC);
+        String doctorDepartment = (String) jwtService.extractClaim(token.substring(7), "department");
+        boolean isGeneralPractitioner = doctorDepartment.equalsIgnoreCase(GlobalConstants.GENERAL_PRACTITIONERS_CLINIC);
         Pageable page = PageRequest.of(pageIndex, pageSize);
-        return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber.getValue(), isGeneralPractitioner, page));
+        return ResponseEntity.ok(service.getDoctorsExams(userLogin, birthNumber.getValue(), isGeneralPractitioner,
+                type, doctor, department, page));
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

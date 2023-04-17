@@ -14,8 +14,14 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional<Patient> findByPersonBirthNumber (String birthNumber);
 
     @Query("SELECT DISTINCT me.patient FROM MedicalExamination me " +
-            "WHERE me.doctor.doctorId = ?1")
-    List<Patient> findDoctorsPatients(Long doctorId);
+            "WHERE me.doctor = ?1")
+    List<Patient> findDoctorsPatients(Doctor doctor);
+
+    @Query("SELECT DISTINCT me.patient FROM MedicalExamination me " +
+            "LEFT JOIN AccessRequest ar ON (ar.medicalExamination = me) " +
+            "WHERE me.doctor = ?1 " +
+            "OR (ar.doctor = ?1 AND ar.approved = true AND ar.rejected = false)")
+    List<Patient> findDoctorsPatientsIncludingAR(Doctor doctor);
 
     @Query("SELECT COUNT(DISTINCT me.doctor) FROM MedicalExamination me " +
             "WHERE me.patient = ?1")
@@ -31,6 +37,14 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
             "WHERE p.generalPractitioner = ?1 " +
             "OR me.doctor = ?1")
     List<Patient> findGeneralPractitionersPatients(Doctor generalPractitioner);
+
+    @Query("SELECT DISTINCT p FROM Patient p " +
+            "LEFT JOIN MedicalExamination me ON (me.patient = p) " +
+            "LEFT JOIN AccessRequest ar ON (ar.medicalExamination = me) " +
+            "WHERE p.generalPractitioner = ?1 " +
+            "OR me.doctor = ?1 " +
+            "OR (ar.doctor = ?1 AND ar.approved = true AND ar.rejected = false)")
+    List<Patient> findGeneralPractitionersPatientsIncludingAR(Doctor generalPractitioner);
 
     @Query("SELECT COUNT(DISTINCT me.patient) FROM MedicalExamination me " +
             "WHERE me.doctor = ?1")

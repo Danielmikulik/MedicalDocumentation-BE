@@ -32,4 +32,8 @@ public class CityService {
         }
         return result;
     }
+
+    public List<String> getCityNames() {
+        return repository.getDistinctCityNames();
+    }
 }

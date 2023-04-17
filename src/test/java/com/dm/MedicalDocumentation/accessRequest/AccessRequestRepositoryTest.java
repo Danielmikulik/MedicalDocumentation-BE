@@ -74,6 +74,9 @@ class AccessRequestRepositoryTest {
         User patientUser = User.builder().userLogin("Patient").email("c").password("c").telephone("").role(Role.PATIENT)
                 .createdAt(LocalDateTime.now()).build();
         entityManager.persist(patientUser);
+        User patientUser2 = User.builder().userLogin("Patient2").email("d").password("d").telephone("").role(Role.PATIENT)
+                .createdAt(LocalDateTime.now()).build();
+        entityManager.persist(patientUser2);
         Person patientPerson = Person.builder().name("Patient").surname("Patient").birthDate(LocalDate.of(1981, 2,18))
                 .birthNumber("810218/8317").city(city).address("Address 1").build();
         entityManager.persist(patientPerson);
@@ -86,16 +89,16 @@ class AccessRequestRepositoryTest {
         MedicalExamination medExam1 = MedicalExamination.builder().type(examinationType).departmentType(departmentType1).doctor(doctor)
                 .patient(patient).disease(null).startTime(LocalDateTime.now()).endTime(LocalDateTime.now().plusMinutes(30)).build();
         entityManager.persist(medExam1);
-        MedicalExamination medExam2 = MedicalExamination.builder().type(examinationType).departmentType(departmentType1).doctor(doctor)
-                .patient(patient).disease(null).startTime(LocalDateTime.now().plusMinutes(1)).endTime(LocalDateTime.now().plusMinutes(30)).build();
-        entityManager.persist(medExam2);
 
         Person patientPerson2 = Person.builder().name("Patient2").surname("Patient2").birthDate(LocalDate.of(1981, 2,18))
                 .birthNumber("810218/8318").city(city).address("Address 1").build();
         entityManager.persist(patientPerson2);
-        Patient patient2 = Patient.builder().user(patientUser).generalPractitioner(generalPractitioner)
+        Patient patient2 = Patient.builder().user(patientUser2).generalPractitioner(generalPractitioner)
                 .person(patientPerson2).healthInsurance(healthInsurance).build();
         entityManager.persist(patient2);
+        MedicalExamination medExam2 = MedicalExamination.builder().type(examinationType).departmentType(departmentType1).doctor(doctor)
+                .patient(patient2).disease(null).startTime(LocalDateTime.now().plusMinutes(1)).endTime(LocalDateTime.now().plusMinutes(30)).build();
+        entityManager.persist(medExam2);
 
         MedicalExamination medExam3 = MedicalExamination.builder().type(examinationType).departmentType(departmentType1).doctor(doctor)
                 .patient(patient2).disease(null).startTime(LocalDateTime.now().plusMinutes(2)).endTime(LocalDateTime.now().plusMinutes(30)).build();
@@ -154,7 +157,7 @@ class AccessRequestRepositoryTest {
 
         Page<AccessRequest> allFilteredRequestsPage = underTest.getGeneralPractitionersPatientsAllAccessRequests(generalPractitioner,
                 patientPerson2.getFullName(), "", "", "", "", page);
-        assertArrayEquals(new AccessRequest[]{request3}, allFilteredRequestsPage.getContent().toArray());
+        assertArrayEquals(new AccessRequest[]{request2}, allFilteredRequestsPage.getContent().toArray());
 
         Page<AccessRequest> rejectedPage = underTest.getGeneralPractitionersPatientsRejectedAccessRequests(generalPractitioner,
                 "", "", "", "", "", page);
@@ -162,6 +165,6 @@ class AccessRequestRepositoryTest {
 
         List<Object[]> groups = underTest.getNonApprovedAccessRequestCounts(doctor3);
         assertArrayEquals(groups.get(0), new Object[]{1L, patient, departmentType1, false});
-        assertArrayEquals(groups.get(1), new Object[]{1L, patient, departmentType1, true});
+        assertArrayEquals(groups.get(1), new Object[]{1L, patient2, departmentType1, true});
     }
 }

@@ -15,3 +15,11 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
   jackson:
     default-property-inclusion: non_null
+server:
+  ssl:
+    key-store: classpath:keystore/trustStore.p12
+    key-store-password: medicalDocDP
+    key-store-type: pkcs12
+    key-alias: medicalDoc
+    key-password: medicalDocDP
+  port: 8443

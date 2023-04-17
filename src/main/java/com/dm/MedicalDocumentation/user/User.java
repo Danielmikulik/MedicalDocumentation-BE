@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @GeneratedValue
     private Long userId;
 
-    @Column(name = "login", unique=true, nullable = false, length = 40)
+    @Column(name = "login", unique = true, nullable = false, length = 40)
     private String userLogin;
 
     @OneToOne(mappedBy = "user")

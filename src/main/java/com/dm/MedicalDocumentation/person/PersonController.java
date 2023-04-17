@@ -12,15 +12,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/person")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class PersonController {
     private final PersonService service;
 
     @GetMapping("/all")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<List<String>> getAllPatients(
+    public ResponseEntity<List<String>> getAllPeople(
     ) {
         return ResponseEntity.ok(service.getAllPeople());
+    }
+
+    @GetMapping("/unassigned")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getUnassignedPeople(
+    ) {
+        return ResponseEntity.ok(service.getUnassignedPeople());
+    }
+
+    @GetMapping("/unassigned_doctors")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getUnassignedDoctors(
+    ) {
+        return ResponseEntity.ok(service.getUnassignedDoctors());
     }
 
     @PostMapping

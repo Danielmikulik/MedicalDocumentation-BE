@@ -11,6 +11,7 @@ import com.dm.MedicalDocumentation.hospital.department.DepartmentID;
 import com.dm.MedicalDocumentation.hospital.department.DepartmentRepository;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentType;
 import com.dm.MedicalDocumentation.hospital.department.type.DepartmentTypeRepository;
+import com.dm.MedicalDocumentation.patient.Patient;
 import com.dm.MedicalDocumentation.patient.PatientRepository;
 import com.dm.MedicalDocumentation.person.Person;
 import com.dm.MedicalDocumentation.person.PersonRepository;
@@ -105,12 +106,13 @@ public class DoctorService {
 
     public boolean recordExists(DoctorRequest request) {
         Optional<Doctor> doctor = repository.findByPersonBirthNumber(request.getPerson());
+        Optional<Patient> patient = patientRepository.findByPersonBirthNumber(request.getPerson());
         Optional<User> user = userRepository.findByUserLogin(request.getUserLogin());
         Doctor foundDoctor = null;
         if (user.isPresent()) {
             foundDoctor = user.get().getDoctor();
         }
-        return doctor.isPresent() || foundDoctor != null;
+        return doctor.isPresent() || patient.isPresent() || foundDoctor != null;
     }
 
     @Transactional

@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class UserController {
 
     private final JwtService jwtService;
@@ -70,13 +70,31 @@ public class UserController {
         return ResponseEntity.ok(service.getLogins());
     }
 
+    @GetMapping("/unused_pharmacy_logins")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getUnusedPharmacyLogins() {
+        return ResponseEntity.ok(service.getUnusedPharmacyLogins());
+    }
+
+    @GetMapping("/unused_patient_logins")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getUnusedPatientLogins() {
+        return ResponseEntity.ok(service.getUnusedPatientLogins());
+    }
+
+    @GetMapping("/unused_doctor_logins")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getUnusedDoctorLogins() {
+        return ResponseEntity.ok(service.getUnusedDoctorLogins());
+    }
+
     @GetMapping("/created_last_year")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<CountsByMonthResponse> getCreatedUserCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getCreatedUserCountsForInterval(
             @RequestParam LocalDate dateSince,
             @RequestParam LocalDate dateUntil,
             @RequestParam String interval
     ) {
-        return ResponseEntity.ok(service.getCreatedUserCountsForLastYear(dateSince, dateUntil, interval));
+        return ResponseEntity.ok(service.getCreatedUserCountsForInterval(dateSince, dateUntil, interval));
     }
 }

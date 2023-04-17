@@ -124,7 +124,7 @@ public class PrescriptionService {
         return repository.countByPatientAndPrescribedAtGreaterThanEqualAndRetrievedAtIsNull(patient, dateTimeSince);
     }
 
-    public CountsByMonthResponse getPrescriptionCountsForLastYear(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
+    public CountsByMonthResponse getPrescriptionCountsForInterval(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
         boolean monthInterval = interval.equals("month");
         LocalDateTime endDate;
         LocalDateTime startDate;
@@ -178,6 +178,7 @@ public class PrescriptionService {
                     .medicationName(prescription.getMedication().getMedicationName())
                     .medicationAmount(prescription.getMedication().getAmount() + " " + prescription.getMedication().getUnit())
                     .packageCount(prescription.getAmount())
+                    .patient(prescription.getPatient().getPerson().getFullName())
                     .doctor(prescription.getDoctor().getPerson().getFullName())
                     .doctorId(prescription.getDoctor().getDoctorId())
                     .prescribedAt(prescription.getPrescribedAt())

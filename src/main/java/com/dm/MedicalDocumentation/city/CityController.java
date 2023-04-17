@@ -12,14 +12,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/city")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class CityController {
     private final CityService service;
 
     @GetMapping("/all")
     @RolesAllowed("ADMIN")
-    public ResponseEntity<List<String>> getDiseaseTypes() {
+    public ResponseEntity<List<String>> getCities() {
         return ResponseEntity.ok(service.getCities());
+    }
+
+    @GetMapping("/names")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<List<String>> getCityNames() {
+        return ResponseEntity.ok(service.getCityNames());
     }
 
     @PostMapping

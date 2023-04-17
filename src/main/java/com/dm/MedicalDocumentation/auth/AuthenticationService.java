@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +58,10 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    public boolean recordExists(RegisterRequest request) {
+        Optional<User> user = repository.findByUserLogin(request.getUserLogin());
+        return user.isPresent();
     }
 }

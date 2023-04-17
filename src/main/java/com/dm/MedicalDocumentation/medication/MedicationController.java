@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/medication")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class MedicationController {
     private final MedicationService service;
 

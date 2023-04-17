@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/attachment")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class AttachmentController {
     private final JwtService jwtService;
     private final AttachmentService service;

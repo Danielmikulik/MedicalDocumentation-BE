@@ -17,6 +17,7 @@ public class PrescriptionResponse {
     private String medicationName;
     private String medicationAmount;
     private int packageCount;
+    private String patient;
     private String doctor;
     private Long doctorId;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")

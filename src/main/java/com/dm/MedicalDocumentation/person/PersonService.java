@@ -17,6 +17,20 @@ public class PersonService {
 
     public List<String> getAllPeople() {
         List<Person> people = repository.findAll();
+        return getPeoplesBirthNumbersAndNames(people);
+    }
+
+    public List<String> getUnassignedPeople() {
+        List<Person> people = repository.getUnassignedPeople();
+        return getPeoplesBirthNumbersAndNames(people);
+    }
+
+    public List<String> getUnassignedDoctors() {
+        List<Person> people = repository.getUnassignedDoctors();
+        return getPeoplesBirthNumbersAndNames(people);
+    }
+
+    private List<String> getPeoplesBirthNumbersAndNames(List<Person> people) {
         List<String> result = new ArrayList<>(people.size());
         for (Person person : people) {
             result.add(person.getBirthNumber() + " " + person.getFullName());

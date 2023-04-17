@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/doctor")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class DoctorController {
     private final JwtService jwtService;
     private final DoctorService service;

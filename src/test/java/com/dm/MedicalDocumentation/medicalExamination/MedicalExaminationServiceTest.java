@@ -67,7 +67,8 @@ class MedicalExaminationServiceTest {
     @Test
     void doctorNotExists() {
         String userLogin = "nonExistingLogin";
-        assertThatThrownBy(() -> underTest.getDoctorsExams(userLogin, null, false, null))
+        assertThatThrownBy(() -> underTest.getDoctorsExams(userLogin, null, false,
+                "", "", "", null))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("No doctor with given login found.");
         verify(doctorRepository, times(1)).findByUserUserLogin(userLogin);
@@ -78,7 +79,8 @@ class MedicalExaminationServiceTest {
         String doctorLogin = "doctor";
         Doctor doctor = new Doctor(1L, new Person(), new User(), new Department(), null);
         given(doctorRepository.findByUserUserLogin(doctorLogin)).willReturn(Optional.of(doctor));
-        assertThatThrownBy(() -> underTest.getDoctorsExams(doctorLogin, "birthNumber", false, null))
+        assertThatThrownBy(() -> underTest.getDoctorsExams(doctorLogin, "birthNumber", false,
+                "", "", "", null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No patient with given birth number found.");
         verify(doctorRepository, times(1)).findByUserUserLogin(doctorLogin);
@@ -95,17 +97,21 @@ class MedicalExaminationServiceTest {
 
         given(doctorRepository.findByUserUserLogin(doctorLogin)).willReturn(Optional.of(doctor));
         given(patientRepository.findByPersonBirthNumber(patientBirthNumber)).willReturn(Optional.of(patient));
-        given(repository.findPatientsExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any())).willReturn(Page.empty());
+        given(repository.findPatientsExamsWithinDepartmentAndWithAccess(
+                eq(doctor), any(), any(), any(), any(), any(), any())).willReturn(Page.empty());
 
-        underTest.getDoctorsExams(doctorLogin, patientBirthNumber, true, null);
+        underTest.getDoctorsExams(doctorLogin, patientBirthNumber, true,
+                "", "", "", null);
 
         verify(doctorRepository, times(1)).findByUserUserLogin(doctorLogin);
         verify(patientRepository, times(1)).findByPersonBirthNumber(patientBirthNumber);
         verify(patientRepository, times(1)).findGeneralPractitionersPatients(doctor);
         verify(patientRepository, times(0)).findDoctorsPatients(any());
 
-        verify(repository, times(0)).findAllExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any());
-        verify(repository, times(1)).findPatientsExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any());
+        verify(repository, times(0)).findAllExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any(),
+                any(), any(), any());
+        verify(repository, times(1)).findPatientsExamsWithinDepartmentAndWithAccess(
+                eq(doctor), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -115,17 +121,21 @@ class MedicalExaminationServiceTest {
         Doctor doctor = new Doctor(1L, new Person(), new User(), department, null);
 
         given(doctorRepository.findByUserUserLogin(doctorLogin)).willReturn(Optional.of(doctor));
-        given(repository.findAllExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any())).willReturn(Page.empty());
+        given(repository.findAllExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any(), any(), any(), any()))
+                .willReturn(Page.empty());
 
-        underTest.getDoctorsExams(doctorLogin, null, false, null);
+        underTest.getDoctorsExams(doctorLogin, null, false,
+                "", "", "",null);
 
         verify(doctorRepository, times(1)).findByUserUserLogin(doctorLogin);
         verify(patientRepository, times(0)).findByPersonBirthNumber(anyString());
         verify(patientRepository, times(0)).findGeneralPractitionersPatients(any());
-        verify(patientRepository, times(1)).findDoctorsPatients(doctor.getDoctorId());
+        verify(patientRepository, times(1)).findDoctorsPatients(doctor);
 
-        verify(repository, times(1)).findAllExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any());
-        verify(repository, times(0)).findPatientsExamsWithinDepartmentAndWithAccess(eq(doctor), any(), any(), any());
+        verify(repository, times(1)).findAllExamsWithinDepartmentAndWithAccess(
+                eq(doctor), any(), any(), any(), any(), any(), any());
+        verify(repository, times(0)).findPatientsExamsWithinDepartmentAndWithAccess(
+                eq(doctor), any(), any(), any(), any(), any(), any());
     }
 
     @Test

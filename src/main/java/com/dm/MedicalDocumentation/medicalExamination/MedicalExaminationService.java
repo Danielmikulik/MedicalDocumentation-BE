@@ -50,8 +50,14 @@ public class MedicalExaminationService {
     private final AttachmentRepository attachmentRepository;
     private final DepartmentTypeRepository departmentTypeRepository;
 
-    public CustomPage<MedicalExamResponse> getPatientsExams(String userLogin, Pageable page) {
-        Page<MedicalExamination> exams = repository.findByPatientUserUserLogin(userLogin, page);
+    public CustomPage<MedicalExamResponse> getPatientsExams(String userLogin, String type, String examDoctor, String department,
+                                                            Pageable page) {
+        type = type == null ? "" : type;
+        examDoctor = examDoctor == null ? "" : examDoctor;
+        department = department == null ? "" : department;
+        Patient patient = patientRepository.findByUserUserLogin(userLogin)
+                .orElseThrow(() -> new UsernameNotFoundException("No patient with given login found."));
+        Page<MedicalExamination> exams = repository.findPatientsExams(patient, type, examDoctor, department, page);
         List<MedicalExamResponse> results = new ArrayList<>(exams.getContent().size());
         for (MedicalExamination exam : exams.getContent()) {
             String disease = exam.getDisease() != null
@@ -63,6 +69,7 @@ public class MedicalExaminationService {
                     .disease(disease)
                     .doctor(exam.getDoctor().getPerson().getFullName())
                     .doctorId(exam.getDoctor().getDoctorId())
+                    .department(exam.getDepartmentType().getDepartmentTypeName())
                     .startTime(exam.getStartTime())
                     .endTime(exam.getEndTime())
                     .build()
@@ -71,7 +78,12 @@ public class MedicalExaminationService {
         return new CustomPage<>(results, exams.getTotalElements(), exams.getTotalPages());
     }
 
-    public CustomPage<MedicalExamResponse> getDoctorsExams(String userLogin, String patientBirthNumber, boolean isGeneralPractitioner, Pageable page) {
+    public CustomPage<MedicalExamResponse> getDoctorsExams(String userLogin, String patientBirthNumber, boolean isGeneralPractitioner,
+                                                           String type, String examDoctor, String department,
+                                                           Pageable page) {
+        type = type == null ? "" : type;
+        examDoctor = examDoctor == null ? "" : examDoctor;
+        department = department == null ? "" : department;
         Doctor doctor = doctorRepository.findByUserUserLogin(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("No doctor with given login found."));
         Patient patient = null;
@@ -81,24 +93,25 @@ public class MedicalExaminationService {
         }
         List<Patient> patients = isGeneralPractitioner
                 ? patientRepository.findGeneralPractitionersPatients(doctor)
-                : patientRepository.findDoctorsPatients(doctor.getDoctorId());
+                : patientRepository.findDoctorsPatients(doctor);
         Page<MedicalExamination> exams = patient == null
                 ? repository.findAllExamsWithinDepartmentAndWithAccess(doctor,
-                    doctor.getDepartment().getId().getDepartmentType(), patients, page)
+                    doctor.getDepartment().getId().getDepartmentType(), patients, type, examDoctor, department, page)
                 : repository.findPatientsExamsWithinDepartmentAndWithAccess(doctor,
-                    doctor.getDepartment().getId().getDepartmentType(), patient, page);
+                    doctor.getDepartment().getId().getDepartmentType(), patient, type, examDoctor, department, page);
         List<MedicalExamResponse> results = new ArrayList<>(exams.getContent().size());
         for (MedicalExamination exam : exams.getContent()) {
-            String disease = exam.getDisease() != null
+            String examDisease = exam.getDisease() != null
                     ? exam.getDisease().getDiseaseType().getDiseaseTypeName()
                     : null;
             results.add(MedicalExamResponse.builder()
                     .id(exam.getMedicalExaminationId())
                     .type(exam.getType().getExaminationTypeName())
-                    .disease(disease)
+                    .disease(examDisease)
                     .patient(exam.getPatient().getPerson().getFullName())
                     .doctor(exam.getDoctor().getPerson().getFullName())
                     .doctorId(exam.getDoctor().getDoctorId())
+                    .department(exam.getDepartmentType().getDepartmentTypeName())
                     .startTime(exam.getStartTime())
                     .endTime(exam.getEndTime())
                     .build()
@@ -211,7 +224,7 @@ public class MedicalExaminationService {
         attachmentRepository.save(attachment);
     }
 
-    public CountsByMonthResponse getExamCountsForLastYear(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
+    public CountsByMonthResponse getExamCountsForInterval(String userLogin, LocalDate dateSince, LocalDate dateUntil, String interval, boolean isDoctor) {
         boolean monthInterval = interval.equals("month");
         LocalDateTime endDate;
         LocalDateTime startDate;

@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/access_request")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class AccessRequestController {
     private final JwtService jwtService;
     private final AccessRequestService service;

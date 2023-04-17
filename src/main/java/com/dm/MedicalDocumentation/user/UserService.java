@@ -95,7 +95,7 @@ public class UserService {
         return result;
     }
 
-    public CountsByMonthResponse getCreatedUserCountsForLastYear(LocalDate dateSince, LocalDate dateUntil, String interval) {
+    public CountsByMonthResponse getCreatedUserCountsForInterval(LocalDate dateSince, LocalDate dateUntil, String interval) {
         boolean monthInterval = interval.equals("month");
         LocalDateTime endDate;
         LocalDateTime startDate;
@@ -132,5 +132,17 @@ public class UserService {
                 .address(pharmacy.getAddress())
                 .registeredSince(user.getCreatedAt())
                 .build();
+    }
+
+    public List<String> getUnusedPharmacyLogins() {
+        return repository.findUnusedPharmacyLogins();
+    }
+
+    public List<String> getUnusedPatientLogins() {
+        return repository.findUnusedPatientLogins();
+    }
+
+    public List<String> getUnusedDoctorLogins() {
+        return repository.findUnusedDoctorLogins();
     }
 }

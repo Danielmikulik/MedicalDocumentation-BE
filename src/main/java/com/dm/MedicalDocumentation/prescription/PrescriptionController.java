@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/prescription")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class PrescriptionController {
     private final JwtService jwtService;
     private final PrescriptionService service;
@@ -76,26 +76,26 @@ public class PrescriptionController {
 
     @GetMapping("/doctor_stats")
     @RolesAllowed("DOCTOR")
-    public ResponseEntity<CountsByMonthResponse> getDoctorsPrescriptionCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getDoctorsPrescriptionCountsForInterval(
             @RequestHeader (name="Authorization") String token,
             @RequestParam LocalDate dateSince,
             @RequestParam LocalDate dateUntil,
             @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPrescriptionCountsForLastYear(userLogin, dateSince, dateUntil, interval, true));
+        return ResponseEntity.ok(service.getPrescriptionCountsForInterval(userLogin, dateSince, dateUntil, interval, true));
     }
 
     @GetMapping("/patient_stats")
     @RolesAllowed("PATIENT")
-    public ResponseEntity<CountsByMonthResponse> getPatientsPrescriptionCountsForLastYear(
+    public ResponseEntity<CountsByMonthResponse> getPatientsPrescriptionCountsForInterval(
             @RequestHeader (name="Authorization") String token,
             @RequestParam LocalDate dateSince,
             @RequestParam LocalDate dateUntil,
             @RequestParam String interval
     ) {
         String userLogin = jwtService.extractUsername(token.substring(7));
-        return ResponseEntity.ok(service.getPrescriptionCountsForLastYear(userLogin, dateSince, dateUntil, interval, false));
+        return ResponseEntity.ok(service.getPrescriptionCountsForInterval(userLogin, dateSince, dateUntil, interval, false));
     }
 
     @GetMapping("/patient_total_count")

@@ -17,6 +17,7 @@ public class MedicalExamResponse {
     private String type;
     private String disease;
     private String patient;
+    private String department;
     private String doctor;
     private Long doctorId;
     @JsonFormat(pattern="dd.MM.yyyy HH:mm")

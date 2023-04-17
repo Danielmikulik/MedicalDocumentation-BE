@@ -18,7 +18,7 @@ import java.util.List;
 public class Hospital {
     @Id
     @GeneratedValue
-    private Integer hospitalId;
+    private Long hospitalId;
 
     @Column(nullable = false, length = 70)
     private String hospitalName;

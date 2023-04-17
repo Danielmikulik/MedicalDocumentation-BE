@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/disease")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class DiseaseController {
     private final JwtService jwtService;
     private final DiseaseService service;
